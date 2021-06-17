@@ -1,0 +1,28 @@
+name: 'Generate properties of changed dir'
+description: 'Used for generating properties for changed dir, like next version, if its first deploy or not, etc'
+inputs:
+  name:
+    description: 'Base name used for prefixing'
+    required: true
+  dirs:
+    description: 'Desired dirs that we should watch for changes'
+    required: true
+outputs:
+  continue:
+    description: 'Return "yes" if anything has changed'
+    value: ${{ steps.generate-properties.outputs.continue }}
+  version:
+    description: 'Return new version if anything has changed'
+    value: ${{ steps.generate-properties.outputs.version }}
+  first_time:
+    description: 'Return "yes" if there are no {name}-latest tags in repo'
+    value: ${{ steps.generate-properties.outputs.first_time }}
+runs:
+  using: "composite"
+  steps:
+    - id: generate-properties
+      run: |
+       ${{ github.action_path }}/run.sh \
+        '${{ inputs.name }}' \
+        '${{ inputs.dirs }}'
+      shell: bash

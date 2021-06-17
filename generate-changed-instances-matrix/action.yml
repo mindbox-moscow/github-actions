@@ -1,0 +1,31 @@
+name: 'Generate changed instances matrix'
+description: 'Used for generating matrix of changed dirs and their version tags'
+inputs:
+  forceRunAll:
+    description: 'If "yes", force to run all instances, regardless of changes'
+    required: false
+    default: 'no'
+  instancesDir:
+    description: 'Folder that contains other folders for each instance'
+    required: true
+  additionalPaths:
+    description: 'Paths that trigger run of everything, if there is changes in them'
+    required: false
+    default: ''
+outputs:
+  continue:
+    description: 'If any instance has changed, return "yes"'
+    value: ${{ steps.generate-matrix.outputs.continue }}
+  matrix:
+    description: 'Matrix in json format that can be passed in steps matrix'
+    value: ${{ steps.generate-matrix.outputs.matrix }}
+runs:
+  using: "composite"
+  steps:
+    - id: generate-matrix
+      run: |
+       ${{ github.action_path }}/run.sh \
+        '${{ inputs.forceRunAll }}' \
+        '${{ inputs.instancesDir }}' \
+        '${{ inputs.additionalPaths }}'
+      shell: bash
