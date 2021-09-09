@@ -19,6 +19,12 @@ inputs:
   OCTOPUS_MINDBOX_GITHUB_TOKEN:
     description: ''
     required: true
+  TF_SECRETS_BACKEND_ACCESS_KEY:
+    description: ''
+    required: true
+  TF_SECRETS_BACKEND_SECRET_KEY:
+    description: ''
+    required: true
 outputs: {}
 runs:
   using: "composite"
@@ -42,11 +48,12 @@ runs:
         OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
       shell: bash
 
-    # - name: "Terraform Init"
-    #   id: init
-    #   run: terraform init
-    #     -backend-config="access_key=${{ secrets.TF_SECRETS_BACKEND_ACCESS_KEY }}"
-    #     -backend-config="secret_key=${{ secrets.TF_SECRETS_BACKEND_SECRET_KEY }}"
+    - name: "Terraform Init"
+      id: init
+      run: terraform init
+        -backend-config="access_key=${{ inputs.TF_SECRETS_BACKEND_ACCESS_KEY }}"
+        -backend-config="secret_key=${{ inputs.TF_SECRETS_BACKEND_SECRET_KEY }}"
+      shell: bash
 
     # - name: "Terraform Validate"
     #   id: validate
