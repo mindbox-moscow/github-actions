@@ -76,7 +76,9 @@ runs:
 
     - name: "Path"
       run: ls -la 
+      working-directory: 'yandex/staging'
       shell: bash
+      
 
     # - name: "Terraform Plan"
     #   id: plan
