@@ -25,6 +25,12 @@ inputs:
   TF_SECRETS_BACKEND_SECRET_KEY:
     description: ''
     required: true
+  YC_CDP_STAGING_STATIC_ACCESS_KEY:
+    description: ''
+    required: true
+  YC_CDP_STAGING_STATIC_SECRET_KEY:
+    description: ''
+    required: true
 outputs: {}
 runs:
   using: "composite"
@@ -68,7 +74,7 @@ runs:
     - name: "Terraform Plan"
       id: plan
       run: terraform plan -no-color
-          -var="deployer_cdp_credentials={access_key=\"${{ secrets.YC_CDP_STAGING_STATIC_ACCESS_KEY }}\",secret_key=\"${{ secrets.YC_CDP_STAGING_STATIC_SECRET_KEY }}\"}"
+          -var="deployer_cdp_credentials={access_key=\"${{ inputs.YC_CDP_STAGING_STATIC_ACCESS_KEY }}\",secret_key=\"${{ inputs.YC_CDP_STAGING_STATIC_SECRET_KEY }}\"}"
           -out=plan.tfplan
           -detailed-exitcode
       # continue-on-error: true
