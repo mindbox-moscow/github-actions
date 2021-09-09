@@ -16,6 +16,9 @@ inputs:
   tfActionsWorkingDir:
     description: ''
     required: true
+  OCTOPUS_MINDBOX_GITHUB_TOKEN:
+    description: ''
+    required: true
 outputs: {}
 runs:
   using: "composite"
@@ -36,7 +39,8 @@ runs:
         git config --local --remove-section http."https://github.com/"
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
       env:
-        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ secrets.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
+        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
+      shell: bash
 
     # - name: "Terraform Init"
     #   id: init
