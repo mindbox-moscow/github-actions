@@ -7,6 +7,9 @@ inputs:
   githubToken: 
     description: ''
     required: true
+  instancesDir:
+    description: ''
+    required: true
   ycServiceAccountKey:
     description: ''
     required: true
