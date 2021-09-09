@@ -10,28 +10,28 @@ inputs:
   instancesDir:
     description: ''
     required: true
-  ycServiceAccountKey: # step 2 -> make universal or use IF in steps
+  ycServiceAccountKey: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  ycServiceAccountKeyFile: # step 2 -> make universal or use IF in steps
+  ycServiceAccountKeyFile: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  tfActionsWorkingDir: # step 2 -> make universal or use IF in steps
+  tfActionsWorkingDir: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  OCTOPUS_MINDBOX_GITHUB_TOKEN: # step 2 -> make universal or use IF in steps
+  OCTOPUS_MINDBOX_GITHUB_TOKEN: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  TF_SECRETS_BACKEND_ACCESS_KEY: # step 2 -> make universal or use IF in steps
+  TF_SECRETS_BACKEND_ACCESS_KEY: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  TF_SECRETS_BACKEND_SECRET_KEY: # step 2 -> make universal or use IF in steps
+  TF_SECRETS_BACKEND_SECRET_KEY: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  YC_CDP_STAGING_STATIC_ACCESS_KEY: # step 2 -> make universal or use IF in steps
+  YC_CDP_STAGING_STATIC_ACCESS_KEY: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  YC_CDP_STAGING_STATIC_SECRET_KEY: # step 2 -> make universal or use IF in steps
+  YC_CDP_STAGING_STATIC_SECRET_KEY: # todo: use universal NAME or IF in steps
     description: ''
     required: true
 outputs: {}
