@@ -28,7 +28,7 @@ runs:
     - name: "Terraform Format"
       id: fmt
       run: terraform fmt
-      continue-on-error: true
+      # continue-on-error: true
 
     # - name: "Setup github token for module repo"
     #   run: |
