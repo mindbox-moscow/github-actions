@@ -42,7 +42,6 @@ runs:
       uses: hashicorp/setup-terraform@v1
       with:
           terraform_version: ${{ inputs.terraformVersion }}
-      working-directory: 'yandex/staging'
 
     - name: "Terraform Format"
       id: fmt
