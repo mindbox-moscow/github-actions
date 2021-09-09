@@ -42,11 +42,13 @@ runs:
       uses: hashicorp/setup-terraform@v1
       with:
           terraform_version: ${{ inputs.terraformVersion }}
+      working-directory: 'yandex/staging'
 
     - name: "Terraform Format"
       id: fmt
       run: terraform fmt
       # continue-on-error: true
+      working-directory: 'yandex/staging'
       shell: bash
 
     - name: "Setup github token for module repo"
@@ -55,6 +57,7 @@ runs:
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
       env:
         OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
+      working-directory: 'yandex/staging'
       shell: bash
 
     - name: "Terraform Init"
@@ -62,16 +65,19 @@ runs:
       run: terraform init
         -backend-config="access_key=${{ inputs.TF_SECRETS_BACKEND_ACCESS_KEY }}"
         -backend-config="secret_key=${{ inputs.TF_SECRETS_BACKEND_SECRET_KEY }}"
+      working-directory: 'yandex/staging'
       shell: bash
 
     - name: "Terraform Validate"
       id: validate
       run: terraform validate -no-color
+      working-directory: 'yandex/staging'
       shell: bash
 
     - name: "Replace secrets in IAM key file"
       run: |
         echo '${{ inputs.ycServiceAccountKey }}' > ${{ inputs.ycServiceAccountKeyFile }}
+      working-directory: 'yandex/staging'
       shell: bash
 
     - name: "Path" # Only For Testing, try working-directory
