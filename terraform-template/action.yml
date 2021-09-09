@@ -12,3 +12,13 @@ runs:
       uses: hashicorp/setup-terraform@v1
       with:
           terraform_version: ${{ inputs.terraformVersion }}
+    - name: "Terraform Format"
+      id: fmt
+      run: terraform fmt
+      continue-on-error: true
+    - name: "Setup github token for module repo"
+      run: |
+        git config --local --remove-section http."https://github.com/"
+        git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
+      env:
+        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ secrets.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
