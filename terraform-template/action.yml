@@ -1,0 +1,14 @@
+name: 'Composite Terraform'
+description: 'Composite Terraform GitHub Actions'
+inputs:
+  terraformVersion:
+    description: ''
+    required: true
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup Terraform"
+      uses: hashicorp/setup-terraform@v1
+      with:
+          terraform_version: ${{ inputs.terraformVersion }}
