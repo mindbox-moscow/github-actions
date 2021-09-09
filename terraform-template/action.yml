@@ -30,69 +30,69 @@ runs:
       run: terraform fmt
       continue-on-error: true
 
-    - name: "Setup github token for module repo"
-      run: |
-        git config --local --remove-section http."https://github.com/"
-        git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
-      env:
-        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ secrets.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
+    # - name: "Setup github token for module repo"
+    #   run: |
+    #     git config --local --remove-section http."https://github.com/"
+    #     git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
+    #   env:
+    #     OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ secrets.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
 
-    - name: "Terraform Init"
-      id: init
-      run: terraform init
-        -backend-config="access_key=${{ secrets.TF_SECRETS_BACKEND_ACCESS_KEY }}"
-        -backend-config="secret_key=${{ secrets.TF_SECRETS_BACKEND_SECRET_KEY }}"
+    # - name: "Terraform Init"
+    #   id: init
+    #   run: terraform init
+    #     -backend-config="access_key=${{ secrets.TF_SECRETS_BACKEND_ACCESS_KEY }}"
+    #     -backend-config="secret_key=${{ secrets.TF_SECRETS_BACKEND_SECRET_KEY }}"
 
-    - name: "Terraform Validate"
-      id: validate
-      run: terraform validate -no-color
+    # - name: "Terraform Validate"
+    #   id: validate
+    #   run: terraform validate -no-color
 
-    - name: "Replace secrets in IAM key file"
-      run: |
-        echo '${{ inputs.ycServiceAccountKey }}' > ${{ inputs.ycServiceAccountKeyFile }}
+    # - name: "Replace secrets in IAM key file"
+    #   run: |
+    #     echo '${{ inputs.ycServiceAccountKey }}' > ${{ inputs.ycServiceAccountKeyFile }}
 
-    - name: "Terraform Plan"
-      id: plan
-      run: terraform plan -no-color
-          -var="deployer_cdp_credentials={access_key=\"${{ secrets.YC_CDP_STAGING_STATIC_ACCESS_KEY }}\",secret_key=\"${{ secrets.YC_CDP_STAGING_STATIC_SECRET_KEY }}\"}"
-          -out=plan.tfplan
-          -detailed-exitcode
-      continue-on-error: true
+    # - name: "Terraform Plan"
+    #   id: plan
+    #   run: terraform plan -no-color
+    #       -var="deployer_cdp_credentials={access_key=\"${{ secrets.YC_CDP_STAGING_STATIC_ACCESS_KEY }}\",secret_key=\"${{ secrets.YC_CDP_STAGING_STATIC_SECRET_KEY }}\"}"
+    #       -out=plan.tfplan
+    #       -detailed-exitcode
+    #   continue-on-error: true
 
-    - name: "Fail if plan failed"
-      if: steps.plan.outputs.exitcode == '1'
-      id: failIfPlanFailed
-      run: (exit 1)
+    # - name: "Fail if plan failed"
+    #   if: steps.plan.outputs.exitcode == '1'
+    #   id: failIfPlanFailed
+    #   run: (exit 1)
     
-    - name: "Terraform Show"
-      id: show
-      if: steps.plan.outputs.exitcode != '0'
-      run: terraform show -no-color plan.tfplan
+    # - name: "Terraform Show"
+    #   id: show
+    #   if: steps.plan.outputs.exitcode != '0'
+    #   run: terraform show -no-color plan.tfplan
 
-    - uses: actions/github-script@0.9.0
-      name: "Comment plan"
-      if: steps.plan.outputs.exitcode == '2'
-      env:
-        PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-          #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
-          #### Terraform Plan 📖\`Success with non-empty diff\`
+    # - uses: actions/github-script@0.9.0
+    #   name: "Comment plan"
+    #   if: steps.plan.outputs.exitcode == '2'
+    #   env:
+    #     PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
+    #   with:
+    #     github-token: ${{ secrets.GITHUB_TOKEN }}
+    #     script: |
+    #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+    #       #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+    #       #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
+    #       #### Terraform Plan 📖\`Success with non-empty diff\`
 
-          <details><summary>Show Plan</summary>
+    #       <details><summary>Show Plan</summary>
 
-          \`\`\`${process.env.PLAN}\`\`\`
+    #       \`\`\`${process.env.PLAN}\`\`\`
 
-          </details>
+    #       </details>
 
-          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.tfActionsWorkingDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+    #       *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.tfActionsWorkingDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
 
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: output
-          })
+    #       github.issues.createComment({
+    #         issue_number: context.issue.number,
+    #         owner: context.repo.owner,
+    #         repo: context.repo.repo,
+    #         body: output
+    #       })
