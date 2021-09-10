@@ -102,7 +102,7 @@ runs:
         if [ ${{ steps.plan.outputs.exitcode }} -eq 1 ]; then
           echo "Result is ${{ steps.plan.outputs.exitcode }}"
         else
-          echo "Other result"
+          echo "Other result: ${{ steps.plan.outputs.exitcode }}"
         fi
       working-directory: 'yandex/staging' # todo: must be dynamic variable
       shell: bash
