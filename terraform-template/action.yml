@@ -107,10 +107,18 @@ runs:
       working-directory: 'yandex/staging' # todo: must be dynamic variable
       shell: bash
     
-    # - name: "Terraform Show"
-    #   id: show
-    #   if: steps.plan.outputs.exitcode != '0'
-    #   run: terraform show -no-color plan.tfplan
+    - name: "Terraform Show"
+      id: show
+      # if: steps.plan.outputs.exitcode != '0'
+      # run: terraform show -no-color plan.tfplan
+      run: |
+        if [ ${{ steps.plan.outputs.exitcode }} -ne 0]; then
+          terraform show -no-color plan.tfplan
+        else
+          echo "Other result: ${{ steps.plan.outputs.exitcode }}"
+        fi
+      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      shell: bash
 
     # - uses: actions/github-script@0.9.0
     #   name: "Comment plan"
