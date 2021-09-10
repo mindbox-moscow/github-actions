@@ -47,7 +47,7 @@ runs:
       id: fmt
       run: terraform fmt
       # continue-on-error: true
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
     - name: "Setup github token for module repo"
