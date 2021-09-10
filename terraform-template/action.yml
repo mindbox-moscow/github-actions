@@ -56,7 +56,7 @@ runs:
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
       env:
         OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
     - name: "Terraform Init"
@@ -64,7 +64,7 @@ runs:
       run: terraform init
         -backend-config="access_key=${{ inputs.TF_SECRETS_BACKEND_ACCESS_KEY }}"
         -backend-config="secret_key=${{ inputs.TF_SECRETS_BACKEND_SECRET_KEY }}"
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
     - name: "Terraform Validate"
@@ -76,12 +76,12 @@ runs:
     - name: "Replace secrets in IAM key file"
       run: |
         echo '${{ inputs.ycServiceAccountKey }}' > ${{ inputs.ycServiceAccountKeyFile }}
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
     - name: "Path" # Only For Testing, try working-directory
       run: ls -la 
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
       
     - name: "Terraform Plan"
@@ -90,7 +90,7 @@ runs:
           -var="deployer_cdp_credentials={access_key=\"${{ inputs.YC_CDP_STAGING_STATIC_ACCESS_KEY }}\",secret_key=\"${{ inputs.YC_CDP_STAGING_STATIC_SECRET_KEY }}\"}"
           -out=plan.tfplan
           -detailed-exitcode
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       # continue-on-error: true
       shell: bash
 
@@ -104,7 +104,7 @@ runs:
         else
           echo "Other result: ${{ steps.plan.outputs.exitcode }}"
         fi
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
     
     - name: "Terraform Show"
@@ -117,7 +117,7 @@ runs:
         else
           echo "Other result: ${{ steps.plan.outputs.exitcode }}"
         fi
-      working-directory: 'yandex/staging' # todo: must be dynamic variable
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
     # - uses: actions/github-script@0.9.0
