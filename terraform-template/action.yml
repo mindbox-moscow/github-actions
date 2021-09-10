@@ -98,6 +98,7 @@ runs:
       if: steps.plan.outputs.exitcode == '1'
       id: failIfPlanFailed
       run: (exit 1)
+      working-directory: 'yandex/staging'
       shell: bash
     
     # - name: "Terraform Show"
