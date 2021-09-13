@@ -10,22 +10,23 @@ inputs:
   instancesDir:
     description: ''
     required: true
-  ycServiceAccountKey: # todo: use universal NAME or IF in steps
+  serviceAccountKey: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  ycServiceAccountKeyFile: # todo: use universal NAME or IF in steps
+  serviceAccountKeyFile: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  tfActionsWorkingDir: # todo: use universal NAME or IF in steps
-    description: ''
-    required: true
+    default: "deployment_key.json"
+  # tfActionsWorkingDir: # todo: use universal NAME or IF in steps
+  #   description: ''
+  #   required: true
   OCTOPUS_MINDBOX_GITHUB_TOKEN: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  TF_SECRETS_BACKEND_ACCESS_KEY: # todo: use universal NAME or IF in steps
+  backendAccessKey: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  TF_SECRETS_BACKEND_SECRET_KEY: # todo: use universal NAME or IF in steps
+  backendSecretKey: # todo: use universal NAME or IF in steps
     description: ''
     required: true
   YC_CDP_STATIC_ACCESS_KEY: # todo: use universal NAME or IF in steps
@@ -77,8 +78,8 @@ runs:
     - name: "Terraform Init"
       id: init
       run: terraform init
-        -backend-config="access_key=${{ inputs.TF_SECRETS_BACKEND_ACCESS_KEY }}"
-        -backend-config="secret_key=${{ inputs.TF_SECRETS_BACKEND_SECRET_KEY }}"
+        -backend-config="access_key=${{ inputs.backendAccessKey }}"
+        -backend-config="secret_key=${{ inputs.backendSecretKey }}"
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
@@ -90,7 +91,7 @@ runs:
 
     - name: "Replace secrets in IAM key file"
       run: |
-        echo '${{ inputs.ycServiceAccountKey }}' > ${{ inputs.ycServiceAccountKeyFile }}
+        echo '${{ inputs.serviceAccountKey }}' > ${{ inputs.serviceAccountKeyFile }}
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
       
@@ -138,7 +139,7 @@ runs:
             <details><summary>Show Plan</summary>
             \`\`\`${process.env.PLAN}\`\`\`
             </details>
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.tfActionsWorkingDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.instancesDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
