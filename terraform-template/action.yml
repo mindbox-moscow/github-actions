@@ -122,6 +122,8 @@ runs:
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
+    # !!! ISSUES !!!
+    # https://github.com/actions/runner/issues/834
     # - uses: actions/github-script@0.9.0
     #   name: "Comment plan"
     #   # if: steps.plan.outputs.exitcode == '2'
