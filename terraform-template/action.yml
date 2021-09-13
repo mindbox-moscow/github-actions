@@ -85,7 +85,7 @@ runs:
     - name: "Terraform Validate"
       id: validate
       run: terraform validate -no-color
-      working-directory: 'yandex/staging'
+      working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
     - name: "Replace secrets in IAM key file"
