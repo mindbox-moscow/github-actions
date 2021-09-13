@@ -20,7 +20,7 @@ inputs:
   # tfActionsWorkingDir: # todo: use universal NAME or IF in steps
   #   description: ''
   #   required: true
-  OCTOPUS_MINDBOX_GITHUB_TOKEN: # todo: use universal NAME or IF in steps
+  octopusMindboxGithubToken: # todo: use universal NAME or IF in steps
     description: ''
     required: true
   backendAccessKey: # todo: use universal NAME or IF in steps
@@ -71,7 +71,7 @@ runs:
         git config --local --remove-section http."https://github.com/"
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
       env:
-        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.OCTOPUS_MINDBOX_GITHUB_TOKEN }}
+        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.octopusMindboxGithubToken }}
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
