@@ -10,29 +10,29 @@ inputs:
   instancesDir:
     description: ''
     required: true
-  serviceAccountKey: # todo: use universal NAME or IF in steps
+  serviceAccountKey:
     description: ''
     required: true
-  serviceAccountKeyFile: # todo: use universal NAME or IF in steps
+  serviceAccountKeyFile:
     description: ''
     required: true
     default: "deployment_key.json"
-  # tfActionsWorkingDir: # todo: use universal NAME or IF in steps
+  # tfActionsWorkingDir:
   #   description: ''
   #   required: true
-  octopusMindboxGithubToken: # todo: use universal NAME or IF in steps
+  octopusMindboxGithubToken:
     description: ''
     required: true
-  backendAccessKey: # todo: use universal NAME or IF in steps
+  backendAccessKey:
     description: ''
     required: true
-  backendSecretKey: # todo: use universal NAME or IF in steps
+  backendSecretKey:
     description: ''
     required: true
-  YC_CDP_STATIC_ACCESS_KEY: # todo: use universal NAME or IF in steps
+  YC_CDP_STATIC_ACCESS_KEY:
     description: ''
     required: true
-  YC_CDP_STATIC_SECRET_KEY: # todo: use universal NAME or IF in steps
+  YC_CDP_STATIC_SECRET_KEY:
     description: ''
     required: true
 outputs:
