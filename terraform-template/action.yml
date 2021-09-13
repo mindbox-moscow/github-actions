@@ -28,10 +28,10 @@ inputs:
   TF_SECRETS_BACKEND_SECRET_KEY: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  YC_CDP_STAGING_STATIC_ACCESS_KEY: # todo: use universal NAME or IF in steps
+  YC_CDP_STATIC_ACCESS_KEY: # todo: use universal NAME or IF in steps
     description: ''
     required: true
-  YC_CDP_STAGING_STATIC_SECRET_KEY: # todo: use universal NAME or IF in steps
+  YC_CDP_STATIC_SECRET_KEY: # todo: use universal NAME or IF in steps
     description: ''
     required: true
 outputs:
@@ -97,7 +97,7 @@ runs:
     - name: "Terraform Plan"
       id: plan
       run: terraform plan -no-color
-          -var="deployer_cdp_credentials={access_key=\"${{ inputs.YC_CDP_STAGING_STATIC_ACCESS_KEY }}\",secret_key=\"${{ inputs.YC_CDP_STAGING_STATIC_SECRET_KEY }}\"}"
+          -var="deployer_cdp_credentials={access_key=\"${{ inputs.YC_CDP_STATIC_ACCESS_KEY }}\",secret_key=\"${{ inputs.YC_CDP_STATIC_SECRET_KEY }}\"}"
           -out=plan.tfplan
           -detailed-exitcode
       working-directory: ${{ inputs.instancesDir }}
