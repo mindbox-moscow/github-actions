@@ -83,7 +83,11 @@ runs:
       
     - name: "---REMOVE THIS JOB---"
       run: |
-        echo ${{ inputs.planAdditionalVars }}
+        for line in ${{ inputs.planAdditionalVars }}
+        do
+          echo $line
+        done
+        # echo ${{ inputs.planAdditionalVars }}
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
