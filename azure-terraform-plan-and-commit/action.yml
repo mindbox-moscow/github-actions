@@ -1,0 +1,138 @@
+name: 'Composite Terraform'
+description: 'Composite Terraform GitHub Actions'
+inputs:
+  terraformVersion:
+    description: ''
+    required: true
+  githubToken: 
+    description: ''
+    required: true
+  instancesDir:
+    description: ''
+    required: true
+  # serviceAccountKey:
+  #   description: ''
+  #   required: true
+  # serviceAccountKeyFile:
+  #   description: ''
+  #   required: true
+  #   default: "deployment_key.json"
+  octopusMindboxGithubToken:
+    description: ''
+    required: true
+  backendAccessKey:
+    description: ''
+    required: true
+  backendSecretKey:
+    description: ''
+    required: true
+  # YC_CDP_STATIC_ACCESS_KEY:
+  #   description: ''
+  #   required: true
+  # YC_CDP_STATIC_SECRET_KEY:
+  #   description: ''
+  #   required: true
+  AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET:
+    description: ''
+    required: true
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup Terraform"
+      uses: hashicorp/setup-terraform@v1
+      with:
+          terraform_version: ${{ inputs.terraformVersion }}
+
+    - name: "Terraform Format"
+      id: fmt
+      run: terraform fmt
+      # continue-on-error: true
+      working-directory: ${{ inputs.instancesDir }}
+      shell: bash
+
+    - name: "Setup github token for module repo"
+      run: |
+        git config --local --remove-section http."https://github.com/"
+        git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
+      env:
+        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.octopusMindboxGithubToken }}
+      working-directory: ${{ inputs.instancesDir }}
+      shell: bash
+
+    - name: "Terraform Init"
+      id: init
+      run: terraform init
+        -backend-config="access_key=${{ inputs.backendAccessKey }}"
+        -backend-config="secret_key=${{ inputs.backendSecretKey }}"
+      working-directory: ${{ inputs.instancesDir }}
+      shell: bash
+
+    - name: "Terraform Validate"
+      id: validate
+      run: terraform validate -no-color
+      working-directory: ${{ inputs.instancesDir }}
+      shell: bash
+
+    # - name: "Replace secrets in IAM key file"
+    #   run: |
+    #     echo '${{ inputs.serviceAccountKey }}' > ${{ inputs.serviceAccountKeyFile }}
+    #   working-directory: ${{ inputs.instancesDir }}
+    #   shell: bash
+      
+    - name: "Terraform Plan"
+      id: plan
+      run: terraform plan -no-color
+          -out=plan.tfplan
+          -detailed-exitcode
+      env:
+        ARM_CLIENT_ID: "22b1c988-150b-4da6-b986-0bf5b8867eab"
+        ARM_TENANT_ID: "398e31d1-fbab-4985-9074-f5c75fac2ef5"
+        ARM_SUBSCRIPTION_ID: "a7117087-1dae-48fa-9017-8674a55dde34"
+        ARM_CLIENT_SECRET: "${{ inputs.AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET }}"
+      working-directory: ${{ inputs.instancesDir }}
+      # continue-on-error: true
+      shell: bash
+
+    - name: "Fail if plan failed"
+      id: failIfPlanFailed
+      run: |
+        if [ ${{ steps.plan.outputs.exitcode }} -eq 1 ]; then
+          exit 1
+        fi
+      working-directory: ${{ inputs.instancesDir }}
+      shell: bash
+    
+    - name: "Terraform Show"
+      id: show
+      run: |
+        if [ ${{ steps.plan.outputs.exitcode }} -ne 0]; then
+          terraform show -no-color plan.tfplan
+        fi
+      working-directory: ${{ inputs.instancesDir }}
+      shell: bash
+
+    - uses: actions/github-script@0.9.0
+      name: "Comment plan"
+      env:
+        PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
+        CONDITION: "${{ steps.plan.outputs.exitcode }}"
+      with:
+        github-token: ${{ inputs.githubToken }}
+        script: |
+          if (process.env.CONDITION == "2") {
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
+            #### Terraform Plan 📖\`Success with non-empty diff\`
+            <details><summary>Show Plan</summary>
+            \`\`\`${process.env.PLAN}\`\`\`
+            </details>
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.instancesDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+          }
