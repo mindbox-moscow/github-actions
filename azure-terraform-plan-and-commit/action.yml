@@ -10,13 +10,6 @@ inputs:
   instancesDir:
     description: ''
     required: true
-  # serviceAccountKey:
-  #   description: ''
-  #   required: true
-  # serviceAccountKeyFile:
-  #   description: ''
-  #   required: true
-  #   default: "deployment_key.json"
   octopusMindboxGithubToken:
     description: ''
     required: true
@@ -26,12 +19,6 @@ inputs:
   backendSecretKey:
     description: ''
     required: true
-  # YC_CDP_STATIC_ACCESS_KEY:
-  #   description: ''
-  #   required: true
-  # YC_CDP_STATIC_SECRET_KEY:
-  #   description: ''
-  #   required: true
   AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET:
     description: ''
     required: true
