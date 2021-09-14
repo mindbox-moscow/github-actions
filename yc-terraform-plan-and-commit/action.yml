@@ -83,7 +83,7 @@ runs:
       
     - name: "for test"
       run: |
-        ${{ planAdditionalVars }}
+        echo ${{ inputs.planAdditionalVars }}
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
