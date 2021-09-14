@@ -81,22 +81,19 @@ runs:
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
       
-    - name: "---REMOVE THIS JOB---"
-      run: |
-        for line in ${{ inputs.planAdditionalVars }}
-        do
-          echo "for line is: $line"
-        done
-        # echo ${{ inputs.planAdditionalVars }}
-      working-directory: ${{ inputs.instancesDir }}
-      shell: bash
+    # - name: "---REMOVE THIS JOB---"
+    #   run: |
+    #     for line in ${{ inputs.planAdditionalVars }}
+    #     do
+    #       echo "for line is: $line"
+    #     done
+    #     # echo ${{ inputs.planAdditionalVars }}
+    #   working-directory: ${{ inputs.instancesDir }}
+    #   shell: bash
 
     - name: "Terraform Plan"
       id: plan
-      run: terraform plan -no-color
-          -var="deployer_cdp_credentials={access_key=\"${{ inputs.YC_CDP_STATIC_ACCESS_KEY }}\",secret_key=\"${{ inputs.YC_CDP_STATIC_SECRET_KEY }}\"}"
-          -out=plan.tfplan
-          -detailed-exitcode
+      run: echo ${{ inputs.planAdditionalVars }}
       working-directory: ${{ inputs.instancesDir }}
       # continue-on-error: true
       shell: bash
