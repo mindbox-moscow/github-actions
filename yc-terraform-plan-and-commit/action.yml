@@ -93,7 +93,7 @@ runs:
 
     - name: "Terraform Plan"
       id: plan
-      run: echo ${{ inputs.planAdditionalVars }}
+      run: ${{ inputs.planAdditionalVars }}
       working-directory: ${{ inputs.instancesDir }}
       # continue-on-error: true
       shell: bash
