@@ -81,7 +81,7 @@ runs:
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
       
-    - name: "for test"
+    - name: "---REMOVE THIS JOB---"
       run: |
         echo ${{ inputs.planAdditionalVars }}
       working-directory: ${{ inputs.instancesDir }}
