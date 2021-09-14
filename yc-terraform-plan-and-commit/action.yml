@@ -32,6 +32,10 @@ inputs:
   YC_CDP_STATIC_SECRET_KEY:
     description: ''
     required: true
+  planAdditionalVars:
+    description: ''
+    required: true
+    default: 'planAdditionalVars is empty'
 outputs: {}
 runs:
   using: "composite"
@@ -77,6 +81,12 @@ runs:
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
       
+    - name: "for test"
+      run: |
+        ${{ planAdditionalVars }}
+      working-directory: ${{ inputs.instancesDir }}
+      shell: bash
+
     - name: "Terraform Plan"
       id: plan
       run: terraform plan -no-color
