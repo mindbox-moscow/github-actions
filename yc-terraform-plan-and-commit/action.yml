@@ -87,9 +87,13 @@ runs:
 
     - name: "Terraform Plan"
       id: plan
-      run: ${{ inputs.planAdditionalVars }}
+      run: |
+        PLAN="terraform plan -no-color ${{ planAdditionalVars }}  -out=plan.tfplan -detailed-exitcode"
+        $PLAN
       working-directory: ${{ inputs.instancesDir }}
       # continue-on-error: true
+      # env:
+      #   PLAN: "terraform plan -no-color ${{ planAdditionalVars }}  -out=plan.tfplan -detailed-exitcode"
       shell: bash
 
     - name: "Fail if plan failed"
