@@ -17,9 +17,6 @@ inputs:
     description: ''
     required: true
     default: "deployment_key.json"
-  # tfActionsWorkingDir:
-  #   description: ''
-  #   required: true
   octopusMindboxGithubToken:
     description: ''
     required: true
@@ -36,21 +33,6 @@ inputs:
     description: ''
     required: true
 outputs: {}
-  # plan:
-  #   description: "plan exitcode"
-  #   value: ${{ steps.plan.outputs.exitcode }}
-  # show:
-  #   description: "show stdout"
-  #   value: ${{ steps.show.outputs.stdout }}
-  # fmt:
-  #   description: "fmt outcome"
-  #   value: ${{ steps.fmt.outcome }}
-  # init:
-  #   description: "init outcome"
-  #   value: ${{ steps.init.outcome }}
-  # validate:
-  #   description: "validate stdout"
-  #   value: ${{ steps.validate.outputs.stdout }}
 runs:
   using: "composite"
   steps:
