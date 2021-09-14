@@ -26,12 +26,6 @@ inputs:
   backendSecretKey:
     description: ''
     required: true
-  # YC_CDP_STATIC_ACCESS_KEY:
-  #   description: ''
-  #   required: true
-  # YC_CDP_STATIC_SECRET_KEY:
-  #   description: ''
-  #   required: true
   planAdditionalVars:
     description: ''
     required: true
