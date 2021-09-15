@@ -119,7 +119,7 @@ runs:
     - uses: actions/github-script@0.9.0
       name: "Comment plan"
       env:
-        PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
+        PLAN: "${{ steps.show.outputs.stdout }}"
         CONDITION: "${{ steps.plan.outputs.planExitCode }}"
       with:
         github-token: ${{ inputs.githubToken }}
