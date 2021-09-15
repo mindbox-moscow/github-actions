@@ -38,6 +38,7 @@ runs:
       uses: hashicorp/setup-terraform@v1
       with:
           terraform_version: ${{ inputs.terraformVersion }}
+          terraform_wrapper: false
 
     - name: "Terraform Format"
       id: fmt
@@ -85,30 +86,39 @@ runs:
     #   working-directory: ${{ inputs.workingDir }}
     #   shell: bash
 
+    # FIXME: 
+    # https://github.com/actions/runner/issues/646
     - name: "Terraform Plan"
       id: plan
       run: |
-        PLAN="terraform plan -no-color ${{ inputs.planAdditionalVars }}  -out=plan.tfplan -detailed-exitcode"
+        set +e
+        PLAN="terraform plan ${{ inputs.planAdditionalVars }} -no-color -out=plan.tfplan -detailed-exitcode"
         $PLAN
+        echo "::set-output name=planExitCode::$?"
+        exit 0
       working-directory: ${{ inputs.workingDir }}
-      # continue-on-error: true
-      # env:
-      #   PLAN: "terraform plan -no-color ${{ planAdditionalVars }}  -out=plan.tfplan -detailed-exitcode"
       shell: bash
 
     - name: "Fail if plan failed"
       id: failIfPlanFailed
       run: |
-        if [ ${{ steps.plan.outputs.exitcode }} -eq 1 ]; then
+        set -x
+        if [[ ${{ steps.plan.outputs.planExitCode }} -eq 1 ]]; then
+          echo "debug plan failed"
           exit 1
         fi
       working-directory: ${{ inputs.workingDir }}
       shell: bash
     
+    - name: "Setup Terraform"
+      uses: hashicorp/setup-terraform@v1
+      with:
+          terraform_version: ${{ inputs.terraformVersion }}
+
     - name: "Terraform Show"
       id: show
       run: |
-        if [ ${{ steps.plan.outputs.exitcode }} -ne 0]; then
+        if [[ ${{ steps.plan.outputs.planExitCode }} -ne 0 ]]; then
           terraform show -no-color plan.tfplan
         fi
       working-directory: ${{ inputs.workingDir }}
@@ -117,8 +127,8 @@ runs:
     - uses: actions/github-script@0.9.0
       name: "Comment plan"
       env:
-        PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
-        CONDITION: "${{ steps.plan.outputs.exitcode }}"
+        PLAN: "${{ steps.show.outputs.stdout }}"
+        CONDITION: "${{ steps.plan.outputs.planExitCode }}"
       with:
         github-token: ${{ inputs.githubToken }}
         script: |
@@ -127,9 +137,15 @@ runs:
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
             #### Terraform Plan 📖\`Success with non-empty diff\`
+            
             <details><summary>Show Plan</summary>
-            \`\`\`${process.env.PLAN}\`\`\`
+            
+            \`\`\`terraform\n
+            ${process.env.PLAN}
+            \`\`\`
+            
             </details>
+
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.workingDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
             github.issues.createComment({
               issue_number: context.issue.number,
