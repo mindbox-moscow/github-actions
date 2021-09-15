@@ -7,16 +7,16 @@ inputs:
   githubToken: 
     description: ''
     required: true
-  instancesDir:
+  mindboxOrgGithubToken:
+    description: 'Used to download organization wide resources, like terraform-modules repo'
+    required: true
+  workingDir:
     description: ''
     required: true
-  octopusMindboxGithubToken:
+  tfBackendAccessKey:
     description: ''
     required: true
-  backendAccessKey:
-    description: ''
-    required: true
-  backendSecretKey:
+  tfBackendSecretKey:
     description: ''
     required: true
   servicePrincipalClientSecret:
@@ -31,6 +31,10 @@ inputs:
   armSubscriptionId:
     description: ''
     required: true
+  planAdditionalVars:
+    description: ''
+    required: false
+    default: ''
 outputs: {}
 runs:
   using: "composite"
@@ -44,7 +48,7 @@ runs:
       id: fmt
       run: terraform fmt
       # continue-on-error: true
-      working-directory: ${{ inputs.instancesDir }}
+      working-directory: ${{ inputs.workingDir }}
       shell: bash
 
     - name: "Setup github token for module repo"
@@ -52,35 +56,35 @@ runs:
         git config --local --remove-section http."https://github.com/"
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
       env:
-        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.octopusMindboxGithubToken }}
-      working-directory: ${{ inputs.instancesDir }}
+        OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.mindboxOrgGithubToken }}
+      working-directory: ${{ inputs.workingDir }}
       shell: bash
 
     - name: "Terraform Init"
       id: init
       run: terraform init
-        -backend-config="access_key=${{ inputs.backendAccessKey }}"
-        -backend-config="secret_key=${{ inputs.backendSecretKey }}"
-      working-directory: ${{ inputs.instancesDir }}
+        -backend-config="access_key=${{ inputs.tfBackendAccessKey }}"
+        -backend-config="secret_key=${{ inputs.tfBackendSecretKey }}"
+      working-directory: ${{ inputs.workingDir }}
       shell: bash
 
     - name: "Terraform Validate"
       id: validate
       run: terraform validate -no-color
-      working-directory: ${{ inputs.instancesDir }}
+      working-directory: ${{ inputs.workingDir }}
       shell: bash
 
     - name: "Terraform Plan"
       id: plan
-      run: terraform plan -no-color
-          -out=plan.tfplan
-          -detailed-exitcode
+      run: |
+        PLAN="terraform plan -no-color ${{ inputs.planAdditionalVars }}  -out=plan.tfplan -detailed-exitcode"
+        $PLAN
       env:
         ARM_CLIENT_ID: ${{ inputs.armClientId }}
         ARM_TENANT_ID: ${{ inputs.armTenantId }}
         ARM_SUBSCRIPTION_ID: ${{ inputs.armSubscriptionId }}
         ARM_CLIENT_SECRET: "${{ inputs.servicePrincipalClientSecret }}"
-      working-directory: ${{ inputs.instancesDir }}
+      working-directory: ${{ inputs.workingDir }}
       # continue-on-error: true
       shell: bash
 
@@ -90,7 +94,7 @@ runs:
         if [ ${{ steps.plan.outputs.exitcode }} -eq 1 ]; then
           exit 1
         fi
-      working-directory: ${{ inputs.instancesDir }}
+      working-directory: ${{ inputs.workingDir }}
       shell: bash
     
     - name: "Terraform Show"
@@ -99,7 +103,7 @@ runs:
         if [ ${{ steps.plan.outputs.exitcode }} -ne 0]; then
           terraform show -no-color plan.tfplan
         fi
-      working-directory: ${{ inputs.instancesDir }}
+      working-directory: ${{ inputs.workingDir }}
       shell: bash
 
     - uses: actions/github-script@0.9.0
@@ -118,7 +122,7 @@ runs:
             <details><summary>Show Plan</summary>
             \`\`\`${process.env.PLAN}\`\`\`
             </details>
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.instancesDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.workingDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
