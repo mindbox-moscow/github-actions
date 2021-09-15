@@ -19,7 +19,16 @@ inputs:
   backendSecretKey:
     description: ''
     required: true
-  AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET:
+  servicePrincipalClientSecret:
+    description: ''
+    required: true
+  armClientId:
+    description: ''
+    required: true
+  armTenantId:
+    description: ''
+    required: true
+  armSubscriptionId:
     description: ''
     required: true
 outputs: {}
@@ -61,22 +70,16 @@ runs:
       working-directory: ${{ inputs.instancesDir }}
       shell: bash
 
-    # - name: "Replace secrets in IAM key file"
-    #   run: |
-    #     echo '${{ inputs.serviceAccountKey }}' > ${{ inputs.serviceAccountKeyFile }}
-    #   working-directory: ${{ inputs.instancesDir }}
-    #   shell: bash
-      
     - name: "Terraform Plan"
       id: plan
       run: terraform plan -no-color
           -out=plan.tfplan
           -detailed-exitcode
       env:
-        ARM_CLIENT_ID: "22b1c988-150b-4da6-b986-0bf5b8867eab"
-        ARM_TENANT_ID: "398e31d1-fbab-4985-9074-f5c75fac2ef5"
-        ARM_SUBSCRIPTION_ID: "a7117087-1dae-48fa-9017-8674a55dde34"
-        ARM_CLIENT_SECRET: "${{ inputs.AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET }}"
+        ARM_CLIENT_ID: ${{ inputs.armClientId }}
+        ARM_TENANT_ID: ${{ inputs.armTenantId }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.armSubscriptionId }}
+        ARM_CLIENT_SECRET: "${{ inputs.servicePrincipalClientSecret }}"
       working-directory: ${{ inputs.instancesDir }}
       # continue-on-error: true
       shell: bash
