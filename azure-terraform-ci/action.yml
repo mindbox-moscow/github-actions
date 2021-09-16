@@ -103,15 +103,15 @@ runs:
       working-directory: ${{ inputs.workingDir }}
       shell: bash
 
-    - name: "Setup Terraform"
-      uses: hashicorp/setup-terraform@v1
-      with:
-          terraform_version: ${{ inputs.terraformVersion }}
+    # - name: "Setup Terraform"
+    #   uses: hashicorp/setup-terraform@v1
+    #   with:
+    #       terraform_version: ${{ inputs.terraformVersion }}
     
     - name: "Terraform Show"
       id: show
       run: |
-        if [[ ${{ steps.plan.outputs.planExitCode }} -ne 0]] then
+        if [ ${{ steps.plan.outputs.planExitCode }} -ne 0]; then
           terraform show -no-color plan.tfplan
         fi
       working-directory: ${{ inputs.workingDir }}
