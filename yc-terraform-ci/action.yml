@@ -37,7 +37,7 @@ inputs:
   isLegacyProject:
     description: 'Legacy ci step for Replace secrets in IAM key file'
     required: false
-    default: '1'
+    default: '0'
 outputs: {}
 runs:
   using: "composite"
