@@ -58,7 +58,7 @@ runs:
     - name: "Setup github token for module repo"
       run: |
         echo ${{ inputs.isLegacyProject }}
-        if [[ ${{ inputs.isLegacyProject }} -eq true]]; then
+        if [[ ${{ inputs.isLegacyProject }} -eq true ]]; then
           echo "IT IS OLD STACK"
         else
           echo "ITs NOT AN OLD STACK"
