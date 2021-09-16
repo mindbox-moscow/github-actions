@@ -53,7 +53,6 @@ runs:
 
     - name: "Setup github token for module repo"
       run: |
-        set -x
         if [[ ${{ inputs.legacyReplaceSecretKey }} -ne 0 ]]; then
           echo "IT IS OLD STACK"
         else
@@ -61,7 +60,6 @@ runs:
           git config --local --remove-section http."https://github.com/"
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
         fi
-        set +x
       env:
         OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.mindboxOrgGithubToken }}
       working-directory: ${{ inputs.workingDir }}
