@@ -95,6 +95,7 @@ runs:
     - name: "Fail if plan failed"
       id: failIfPlanFailed
       run: |
+        echo "planExitCode is: ${{ steps.plan.outputs.planExitCode }}"
         set -x
         if [[ ${{ steps.plan.outputs.planExitCode }} -eq 1 ]]; then
           exit 1
