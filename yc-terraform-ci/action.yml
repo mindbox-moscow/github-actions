@@ -62,6 +62,8 @@ runs:
           echo "ITs NOT AN OLD STACK"
           git config --local --remove-section http."https://github.com/"
           git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
+        else
+          echo "Fuck its legacy"
         fi
       env:
         OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.mindboxOrgGithubToken }}
