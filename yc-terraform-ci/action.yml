@@ -54,7 +54,7 @@ runs:
     - name: "Setup github token for module repo"
       run: |
         set -x
-        if [[ ${{ inputs.legacyReplaceSecretKey }} != '' ]]; then
+        if [[ ${{ inputs.legacyReplaceSecretKey }} -ne '' ]]; then
           echo "IT IS OLD STACK"
           exit 1
         else
