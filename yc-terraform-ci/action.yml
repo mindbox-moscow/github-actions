@@ -33,7 +33,7 @@ inputs:
   legacyReplaceSecretKey:
     description: 'Legacy ci step for Replace secrets in IAM key file'
     required: false
-    default: '0'
+    default: ''
 outputs: {}
 runs:
   using: "composite"
@@ -54,7 +54,7 @@ runs:
     - name: "Setup github token for module repo"
       run: |
         echo ${{ inputs.legacyReplaceSecretKey }}
-        if [[ ${{ inputs.legacyReplaceSecretKey }} -ne 0 ]]; then
+        if [[ ${{ inputs.legacyReplaceSecretKey }} ]]; then
           echo "IT IS OLD STACK"
         else
           echo "ITs NOT AN OLD STACK"
