@@ -43,7 +43,7 @@ runs:
       uses: hashicorp/setup-terraform@v1
       with:
           terraform_version: ${{ inputs.terraformVersion }}
-          # terraform_wrapper: false
+          terraform_wrapper: false
 
     - name: "Terraform Format"
       id: fmt
@@ -81,7 +81,7 @@ runs:
         set +e
         PLAN="terraform plan ${{ inputs.planAdditionalVars }}  -no-color -out=plan.tfplan -detailed-exitcode"
         $PLAN
-        echo "::set-output name=planExitCode::2"
+        echo "::set-output name=planExitCode::$?"
         exit 0
       env:
         ARM_CLIENT_ID: ${{ inputs.armClientId }}
