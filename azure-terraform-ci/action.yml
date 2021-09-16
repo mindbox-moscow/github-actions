@@ -133,7 +133,7 @@ runs:
             
             <details><summary>Show Plan</summary>
             
-            \`\`\`terraform\n
+            \`\`\`
             ${process.env.PLAN}
             \`\`\`
             
