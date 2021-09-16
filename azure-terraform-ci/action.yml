@@ -81,7 +81,7 @@ runs:
         set +e
         PLAN="terraform plan ${{ inputs.planAdditionalVars }}  -no-color -out=plan.tfplan -detailed-exitcode"
         $PLAN
-        echo "::set-output name=planExitCode::$?"
+        echo "::set-output name=planExitCode::2"
         exit 0
       env:
         ARM_CLIENT_ID: ${{ inputs.armClientId }}
