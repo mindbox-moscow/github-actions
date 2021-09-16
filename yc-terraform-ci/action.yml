@@ -54,11 +54,11 @@ runs:
     - name: "Setup github token for module repo"
       run: |
         set -x
-        if [ ${{ inputs.legacyReplaceSecretKey }} != '' ]; then
+        if [[ ${{ inputs.legacyReplaceSecretKey }} != '' ]]; then
           echo "IT IS OLD STACK"
           exit 1
         else
-          echo "IT`s NOT AN OLD STACK"
+          echo "ITs NOT AN OLD STACK"
         fi
         
         git config --local --remove-section http."https://github.com/"
