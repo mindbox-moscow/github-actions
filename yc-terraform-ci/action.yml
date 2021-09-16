@@ -53,19 +53,18 @@ runs:
 
     - name: "Setup github token for module repo"
       run: |
-        if [ ${isOldStack} ]
-        then
+        set -x
+        if [ ${{ inputs.legacyReplaceSecretKey }} != '' ]; then
           echo "IT IS OLD STACK"
+          exit 1
         else
           echo "IT`s NOT AN OLD STACK"
         fi
-
-        exit 1  
+        
         git config --local --remove-section http."https://github.com/"
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
       env:
         OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.mindboxOrgGithubToken }}
-        isOldStack: ${{ inputs.legacyReplaceSecretKey }}
       working-directory: ${{ inputs.workingDir }}
       shell: bash
 
@@ -88,11 +87,12 @@ runs:
         if [ ${isOldStack} ]
         then
           echo "IT IS OLD STACK"
+          exit 1 
         else
           echo "IT`s NOT AN OLD STACK"
         fi
 
-        exit 1  
+        
         private_key=$(echo '${{ inputs.legacyReplaceSecretKey }}' | sed 's:[\/&]:\\&:g;$!s/$/\\/')
         sed -i 's:#{PRIVATE_KEY}:'"$private_key"':' ${{ inputs.serviceAccountKeyFile }}
       env: 
