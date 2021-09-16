@@ -33,7 +33,7 @@ inputs:
   legacyReplaceSecretKey:
     description: 'Legacy ci step for Replace secrets in IAM key file'
     required: false
-    default: ''
+    default: '0'
   isLegacyProject:
     description: 'Legacy ci step for Replace secrets in IAM key file'
     required: false
@@ -57,8 +57,8 @@ runs:
 
     - name: "Setup github token for module repo"
       run: |
-        echo ${{ inputs.isLegacyProject }}
-        if [[ ${{ inputs.isLegacyProject }} -eq "0" ]]; then
+        echo ${{ inputs.legacyReplaceSecretKey }}
+        if [[ ${{ inputs.legacyReplaceSecretKey }} -eq "0" ]]; then
           echo "ITs NOT AN OLD STACK"
           git config --local --remove-section http."https://github.com/"
           git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
