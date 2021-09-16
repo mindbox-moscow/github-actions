@@ -37,7 +37,7 @@ inputs:
   isLegacyProject:
     description: 'Legacy ci step for Replace secrets in IAM key file'
     required: false
-    default: 'no'
+    default: 'false'
 outputs: {}
 runs:
   using: "composite"
@@ -58,7 +58,7 @@ runs:
     - name: "Setup github token for module repo"
       run: |
         echo ${{ inputs.isLegacyProject }}
-        if [[ ${{ inputs.isLegacyProject -eq 'yes' }} ]]; then
+        if [[ ${{ inputs.isLegacyProject }} -eq true]]; then
           echo "IT IS OLD STACK"
         else
           echo "ITs NOT AN OLD STACK"
