@@ -103,10 +103,10 @@ runs:
       working-directory: ${{ inputs.workingDir }}
       shell: bash
 
-    # - name: "Setup Terraform"
-    #   uses: hashicorp/setup-terraform@v1
-    #   with:
-    #       terraform_version: ${{ inputs.terraformVersion }}
+    - name: "Setup Terraform"
+      uses: hashicorp/setup-terraform@v1
+      with:
+          terraform_version: ${{ inputs.terraformVersion }}
     
     - name: "Terraform Show"
       id: show
