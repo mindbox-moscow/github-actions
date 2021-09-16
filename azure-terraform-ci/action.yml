@@ -111,7 +111,7 @@ runs:
     - name: "Terraform Show"
       id: show
       run: |
-        if [[ ${{ steps.plan.outputs.planExitCode }} -ne 0]]; then
+        if [[ ${{ steps.plan.outputs.planExitCode }} -ne 0]] then
           terraform show -no-color plan.tfplan
         fi
       working-directory: ${{ inputs.workingDir }}
