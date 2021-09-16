@@ -58,9 +58,7 @@ runs:
     - name: "Setup github token for module repo"
       run: |
         echo ${{ inputs.isLegacyProject }}
-        if [[ ${{ inputs.isLegacyProject }} -eq "1" ]]; then
-          echo "IT IS OLD STACK"
-        else
+        if [[ ${{ inputs.isLegacyProject }} -eq "0" ]]; then
           echo "ITs NOT AN OLD STACK"
           git config --local --remove-section http."https://github.com/"
           git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
