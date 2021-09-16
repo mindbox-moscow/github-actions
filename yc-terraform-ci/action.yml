@@ -30,6 +30,10 @@ inputs:
     description: ''
     required: false
     default: ''
+  oldReplaceSecret:
+    description: 'For old stack ci'
+    required: false
+    default: ''
 outputs: {}
 runs:
   using: "composite"
@@ -49,10 +53,19 @@ runs:
 
     - name: "Setup github token for module repo"
       run: |
+        if [ ${isOldStack} ]
+        then
+          echo "IT IS OLD STACK"
+        else
+          echo "IT`s NOT AN OLD STACK"
+        fi
+
+        exit 1  
         git config --local --remove-section http."https://github.com/"
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
       env:
         OCTOPUS_MINDBOX_GITHUB_TOKEN: ${{ inputs.mindboxOrgGithubToken }}
+        isOldStack: ${{ inputs.oldReplaceSecret }}
       working-directory: ${{ inputs.workingDir }}
       shell: bash
 
@@ -67,6 +80,23 @@ runs:
     - name: "Terraform Validate"
       id: validate
       run: terraform validate -no-color
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
+
+    - name: "Replace secrets in IAM key file"
+      run: |
+        if [ ${isOldStack} ]
+        then
+          echo "IT IS OLD STACK"
+        else
+          echo "IT`s NOT AN OLD STACK"
+        fi
+
+        exit 1  
+        private_key=$(echo '${{ inputs.oldReplaceSecret }}' | sed 's:[\/&]:\\&:g;$!s/$/\\/')
+        sed -i 's:#{PRIVATE_KEY}:'"$private_key"':' ${{ inputs.serviceAccountKeyFile }}
+      env: 
+        isOldStack: ${{ inputs.oldReplaceSecret }}
       working-directory: ${{ inputs.workingDir }}
       shell: bash
 
