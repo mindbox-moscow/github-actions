@@ -60,6 +60,7 @@ runs:
         else
           echo "ITs NOT AN OLD STACK"
         fi
+        set +x
         
         git config --local --remove-section http."https://github.com/"
         git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
