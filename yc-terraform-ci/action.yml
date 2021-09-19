@@ -15,7 +15,8 @@ inputs:
     required: true
   serviceAccountKey:
     description: ''
-    required: true
+    required: false
+    default: ''
   serviceAccountKeyFile:
     description: ''
     required: false
