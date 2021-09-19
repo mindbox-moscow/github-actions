@@ -86,7 +86,7 @@ runs:
 
     - name: "Replace secrets in IAM key file"
       run: |
-        if [[ ${{ inputs.isLegacyProject }} -eq "1" ]]; then
+        if [[ ${{ inputs.isLegacyProject }} -eq "1" || ${{ inputs.isLegacyProject }} -eq "2" ]]; then
           echo "--- RUN OLD STEP: Replace secrets in IAM key file"
           private_key=$(echo '${{ inputs.legacyReplaceSecretKey }}' | sed 's:[\/&]:\\&:g;$!s/$/\\/')
           sed -i 's:#{PRIVATE_KEY}:'"$private_key"':' ${{ inputs.serviceAccountKeyFile }}
