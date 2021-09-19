@@ -59,6 +59,8 @@ runs:
     - name: "Setup github token for module repo"
       run: |
         if [[ ${{ inputs.isLegacyProject }} -ne "1" ]]; then
+          echo "--- RUN STEP: Setup github token for module repo"
+          
           git config --local --remove-section http."https://github.com/"
           git config --global url."https://octopus-mindbox:${OCTOPUS_MINDBOX_GITHUB_TOKEN}@github.com/mindbox-moscow".insteadOf "https://github.com/mindbox-moscow"
         fi
