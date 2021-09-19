@@ -9,7 +9,8 @@ inputs:
     required: true
   mindboxOrgGithubToken:
     description: 'Used to download organization wide resources, like terraform-modules repo'
-    required: true
+    required: false
+    default: ''
   workingDir:
     description: ''
     required: true
