@@ -35,6 +35,10 @@ inputs:
     description: ''
     required: false
     default: ''
+  installTerraformUnofficialProviders:
+    description: ''
+    required: false
+    default: '0'
 outputs: {}
 runs:
   using: "composite"
@@ -44,6 +48,22 @@ runs:
       with:
           terraform_version: ${{ inputs.terraformVersion }}
           terraform_wrapper: false
+
+    - name: "Install terraform unofficial providers"
+      run: |
+        if [[ ${{ inputs.installTerraformUnofficialProviders }} -eq "1" ]]; then
+          set -e
+
+          echo "Downloading octopusdeploy provider binary"
+          wget https://github.com/nmlc/terraform-provider-octopusdeploy/releases/download/v0.6.3/terraform-provider-octopusdeploy_linux_amd64
+
+          echo "Installing octopusdeploy provider"
+          mkdir -p ~/.terraform.d/plugins/octopus.com/com/octopusdeploy/0.6/linux_amd64
+          mv terraform-provider-octopusdeploy_linux_amd64 ~/.terraform.d/plugins/octopus.com/com/octopusdeploy/0.6/linux_amd64
+          chmod 777 ~/.terraform.d/plugins/octopus.com/com/octopusdeploy/0.6/linux_amd64/terraform-provider-octopusdeploy_linux_amd64
+        fi
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
 
     - name: "Terraform Format"
       id: fmt
