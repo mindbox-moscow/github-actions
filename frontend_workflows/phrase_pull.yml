@@ -14,7 +14,7 @@ jobs:
       COMMAND: pull
       gitHubToken: ${{ secrets.GH_FULL_TOKEN }}
       phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
-      slackWebhookUrl: https://hooks.slack.com/services/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
+      slackWebhookUrl: ${{ secrets.SLACK_WEBHOOK_TO_NEW_TRANSLATIONS }}
 
     steps:
     - uses: actions/checkout@v1
@@ -25,7 +25,7 @@ jobs:
         command: push
         gitHubToken: ${{ secrets.GH_FULL_TOKEN }}
         phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
-        slackWebhookUrl: https://hooks.slack.com/services/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
+        slackWebhookUrl: ${{ secrets.SLACK_WEBHOOK_TO_NEW_TRANSLATIONS }}
 
     - name: phrase pull
       uses: mindbox-moscow/gha-phrase-integration@master
@@ -33,4 +33,4 @@ jobs:
         command: pull
         gitHubToken: ${{ secrets.GH_FULL_TOKEN }}
         phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
-        slackWebhookUrl: https://hooks.slack.com/services/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
+        slackWebhookUrl: ${{ secrets.SLACK_WEBHOOK_TO_NEW_TRANSLATIONS }}

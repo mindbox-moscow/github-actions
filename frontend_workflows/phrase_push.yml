@@ -14,7 +14,7 @@ jobs:
       COMMAND: push
       gitHubToken: ${{ secrets.GITHUB_TOKEN }}
       phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
-      slackWebhookUrl: https://hooks.slack.com/services/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
+      slackWebhookUrl: ${{ secrets.SLACK_WEBHOOK_TO_NEW_TRANSLATIONS }}
 
     steps:
     - uses: actions/checkout@v2
@@ -25,4 +25,4 @@ jobs:
         command: push
         gitHubToken: ${{ secrets.GITHUB_TOKEN }}
         phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
-        slackWebhookUrl: https://hooks.slack.com/services/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
+        slackWebhookUrl: ${{ secrets.SLACK_WEBHOOK_TO_NEW_TRANSLATIONS }}
