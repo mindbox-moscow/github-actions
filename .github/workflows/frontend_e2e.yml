@@ -59,8 +59,8 @@ jobs:
     timeout-minutes: 30
     if: ${{ github.ref != 'refs/heads/master' }}
     env:
-      retries: ${{ inputs.retries }
-      CYPRESS_username: "${{ secrets.cypress_login }"
+      retries: ${{ inputs.retries }}
+      CYPRESS_username: "${{ secrets.cypress_login }}"
       CYPRESS_password: "${{ secrets.cypress_password }}"
       registry: cr.yandex/${{ inputs.registry_id }}
       image: ${{ inputs.image_name }}
