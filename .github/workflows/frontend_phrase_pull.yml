@@ -1,8 +1,7 @@
 name: phrase_pull
 
 on:
-  schedule:
-    - cron: "0 */2 * * *"
+  workflow_call:
 
 jobs:
 

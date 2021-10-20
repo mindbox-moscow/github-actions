@@ -1,9 +1,7 @@
 name: phrase_push
 
 on:
-  push:
-    branches:
-      - master
+  workflow_call:
 
 jobs:
   phrase_push:

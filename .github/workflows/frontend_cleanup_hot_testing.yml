@@ -1,7 +1,7 @@
 name: Cleanup trigger after branch deleted
 
 on:
-  delete
+  workflow_call:
 
 jobs:
   cleanup:
