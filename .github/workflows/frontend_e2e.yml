@@ -61,7 +61,7 @@ jobs:
     env:
       retries: ${{ inputs.retries }}
       CYPRESS_username: "${{ secrets.cypress_login }}"
-      CYPRESS_password: "${{ secrets.cypress_password }}"
+      CYPRESS_password: "${{ secrets.cypress_pass }}"
       registry: cr.yandex/${{ inputs.registry_id }}
       image: ${{ inputs.image_name }}
       template_bucket: ${{ inputs.template_bucket }}
