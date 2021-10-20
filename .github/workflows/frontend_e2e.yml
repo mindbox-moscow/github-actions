@@ -8,11 +8,6 @@ on:
         default: 2
         required: false
         type: number
-      cypress_username:
-        description: ""
-        default: "creepenko"
-        required: false
-        type: string
       registry_id:
         description: "YC registry ID"
         default: "crpo9tj76o3c7pi8i72n"
@@ -52,6 +47,9 @@ on:
       bucket_access_key:
         description: 'A NEW_FRONTEND_STAGING_TEMPLATE_BUCKET_ACCESS_KEY token passed from the caller workflow'
         required: true
+      cypress_login:
+        description: 'A CYPRESS_LOGIN token passed from the caller workflow'
+        required: true
       cypress_pass:
         description: 'A CYPRESS_PASSWORD token passed from the caller workflow'
         required: true
@@ -62,7 +60,7 @@ jobs:
     if: ${{ github.ref != 'refs/heads/master' }}
     env:
       retries: ${{ inputs.retries }
-      CYPRESS_username: "${{ inputs.cypress_username }"
+      CYPRESS_username: "${{ secrets.cypress_login }"
       CYPRESS_password: "${{ secrets.cypress_password }}"
       registry: cr.yandex/${{ inputs.registry_id }}
       image: ${{ inputs.image_name }}

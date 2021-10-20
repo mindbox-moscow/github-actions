@@ -7,27 +7,27 @@ on:
         description: "True if need to run check-types"
         default: false
         required: false
-        type: bool
+        type: boolean
       graphql_codegen:
         description: "True if need to run graphql-codegen"
         default: false
         required: false
-        type: bool
+        type: boolean
       linters:
         description: "True if need run check-scripts"
         default: false
         required: false
-        type: bool
+        type: boolean
       tests:
         description: "True if need run tests"
         default: false
         required: false
-        type: bool
+        type: boolean
       translation_checker:
         description: "True if need run translation checker"
         default: false
         required: false
-        type: bool
+        type: boolean
       registry_id:
         description: "YC registry ID"
         default: "crpo9tj76o3c7pi8i72n"
