@@ -113,7 +113,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: mindbox-moscow/frontend-deploy
-          token: ${{ secrets.full_gh_token }}
+          token: ${{ secrets.frontend_gha_full_token }}
           path: ./hot_build
 
       - name: Create proto-html folder
