@@ -1,0 +1,28 @@
+name: phrase_push
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  phrase_push:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    env:
+      COMMAND: push
+      gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
+      slackWebhookUrl: https://hooks.slack.com/services/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
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: phrase push
+      uses: mindbox-moscow/gha-phrase-integration@master
+      with:
+        command: push
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
+        slackWebhookUrl: https://hooks.slack.com/services/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
