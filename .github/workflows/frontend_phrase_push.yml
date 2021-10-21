@@ -2,17 +2,23 @@ name: phrase_push
 
 on:
   workflow_call:
-
+    secrets:
+      phrase_app_token:
+        description: 'A PHRASE_TOKEN token passed from the caller workflow'
+        required: true
+      slack_webhook_url:
+        description: 'A SLACK_WEBHOOK_TO_NEW_TRANSLATIONS token passed from the caller workflow'
+        required: true
 jobs:
   phrase_push:
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-latest
 
     env:
       COMMAND: push
       gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-      phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
-      slackWebhookUrl: ${{ secrets.SLACK_WEBHOOK_TO_NEW_TRANSLATIONS }}
+      phraseAppToken: ${{ secrets.phrase_app_token }}
+      slackWebhookUrl: ${{ secrets.slack_webhook_url }}
 
     steps:
     - uses: actions/checkout@v2
@@ -22,5 +28,5 @@ jobs:
       with:
         command: push
         gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-        phraseAppToken: ${{ secrets.PHRASE_TOKEN }}
-        slackWebhookUrl: ${{ secrets.SLACK_WEBHOOK_TO_NEW_TRANSLATIONS }}
+        phraseAppToken: ${{ secrets.phrase_app_token }}
+        slackWebhookUrl: ${{ secrets.slack_webhook_url }}
