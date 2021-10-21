@@ -43,11 +43,6 @@ on:
         default: ""
         required: false
         type: string
-      failure_notify:
-        description: "True if need to notify if build failure"
-        default: false
-        required: false
-        type: boolean
     secrets:
       npm_token:
         description: 'A GH_NPM_REGISTRY token passed from the caller workflow'
