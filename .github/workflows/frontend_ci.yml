@@ -251,7 +251,7 @@ jobs:
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
-        if: (${{ failure() }} && ${{ inputs.failure_notify }})
+        if: (${{ failure() }}) && (${{ inputs.failure_notify }})
         with:
           url: ${{ secrets.failure_notify_url }}
           body: '{"title": "Build ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\nAutor: ${{ github.actor }}"}'

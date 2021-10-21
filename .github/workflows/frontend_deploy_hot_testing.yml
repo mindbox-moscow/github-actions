@@ -50,7 +50,6 @@ jobs:
   hot-testing:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: ${{ github.ref != 'refs/heads/master' }}
     env:
       registry: cr.yandex/${{ inputs.registry_id }}
       image: ${{ inputs.image_name }}
