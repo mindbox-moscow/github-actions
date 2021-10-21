@@ -55,12 +55,15 @@ jobs:
           sudo curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
           sudo ln -s /home/runner/yandex-cloud/bin/yc /bin/yc
 
-      - name: Remove Hot-Testing Docker Image
-        if: ${{ inputs.hot_testing }}
+      - name: Create YC profile
         run: |
           yc config profile create cleaner
           echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
           rm iam_key.json
+
+      - name: Remove Hot-Testing Docker Image
+        if: ${{ inputs.hot_testing }}
+        run: |
           ./scripts/cleaner.sh $(yc iam create-token) ${{ env.ref_name }}
         working-directory: ./hot_build/hot-testing
 
@@ -84,9 +87,6 @@ jobs:
       - name: Remove E2E-Testing Docker Image
         if: ${{ inputs.e2e_testing }}
         run: |
-          yc config profile create cleaner
-          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
-          rm iam_key.json
           ./scripts/cleaner.sh $(yc iam create-token) ${{ env.ref_name }}
         working-directory: ./hot_build/e2e
 
