@@ -259,7 +259,7 @@ jobs:
         if: failure()
         with:
           name: cypress
-          path: e2e/cypress
+          path: cypress
           retention-days: 1
 
       - name: Add comment to commit if the job has failed
