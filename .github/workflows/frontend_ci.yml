@@ -139,6 +139,7 @@ jobs:
             echo "octopus_project_name=CoreFrontend" >> $GITHUB_ENV
           else
             echo "octopus_project_name=$REPOSITORY" >> $GITHUB_ENV
+          fi
         env:
           REPOSITORY: ${{ steps.set_variables.outputs.repository_name }}
 
