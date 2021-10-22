@@ -255,7 +255,7 @@ jobs:
           E2E_URL: https://e2e-testing-${{ env.hash_payload }}.staging.directcrm.ru
 
       - name: Upload test results artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: cypress
