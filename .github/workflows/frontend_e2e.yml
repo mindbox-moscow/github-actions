@@ -28,6 +28,11 @@ on:
         default: "microapps"
         required: false
         type: string
+      core_project:
+        description: "True if project is frontend_core_v2"
+        default: false
+        required: false
+        type: boolean
     secrets:
       npm_token:
         description: 'A GH_NPM_REGISTRY token passed from the caller workflow'
@@ -196,7 +201,8 @@ jobs:
         with:
           args: kubectl apply -f ./hot_build/e2e/kubernetes/deploy.yml
 
-      - name: Cypress run
+      - name: Run E2E tests on not core project.
+        if: ${{ !inputs.core_project }}
         uses: cypress-io/github-action@v2
         with:
           start: npm run e2e:ci
@@ -209,6 +215,44 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token }}
+
+      - name: Install YC
+        if: ${{ inputs.core_project }}
+        run: |
+          sudo curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          sudo ln -s /home/runner/yandex-cloud/bin/yc /bin/yc
+
+      - name: Create e2e tests list
+        if: ${{ inputs.core_project }}
+        run: |
+          yc config profile create cleaner
+          echo '${{ secrets.CONTAINER_REGISTRY_KEY }}' >> iam_key.json | yc config set service-account-key iam_key.json
+          rm iam_key.json
+          curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]" | sed 's/-latest//g'  > ./e2e_tests.txt
+        env:
+          URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
+        working-directory: e2e
+
+      - name: Run E2E tests on core project.
+        if: ${{ inputs.core_project }}
+        working-directory: e2e
+        run: |
+          IFS=$'\n'; set -f; E2E_TESTS=($(cat ./e2e_tests.txt))
+          for e2e in "${E2E_TESTS[@]}"
+          do
+            [ -d ./cypress/$e2e ] && mkdir -p ./cypress/$e2e
+            mkdir -p ./cypress/$e2e/videos && mkdir -p ./cypress/$e2e/screenshots
+
+            docker run -i \
+              --pull always \
+              -e BASE_URL="$BASE_URL" \
+              -e RETRIES="$RETRIES" \
+              -e CYPRESS_username=$(get_octopusvariable "username") \
+              -e CYPRESS_password=$(get_octopusvariable "password") \
+              -v ./cypress/$e2e/videos:/e2e/cypress/videos \
+              -v ./cypress/$e2e/screenshots:/e2e/cypress/screenshots \
+              cr.yandex/crpo9tj76o3c7pi8i72n/frontend-e2e:$e2e-latest 2>&1
+          done
 
       - name: Upload test results artifacts
         uses: actions/upload-artifact@v1
