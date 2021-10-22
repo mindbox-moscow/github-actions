@@ -247,8 +247,8 @@ jobs:
               -e RETRIES="${{ env.retries }}" \
               -e CYPRESS_username=${{ secrets.cypress_login }} \
               -e CYPRESS_password=${{ secrets.cypress_pass }} \
-              -v ./cypress/$e2e/videos:/e2e/cypress/videos \
-              -v ./cypress/$e2e/screenshots:/e2e/cypress/screenshots \
+              -v $(pwd)/cypress/$e2e/videos:/e2e/cypress/videos \
+              -v $(pwd)/cypress/$e2e/screenshots:/e2e/cypress/screenshots \
               cr.yandex/${{ inputs.registry_id }}/frontend-e2e:$e2e-latest 2>&1
           done
 
