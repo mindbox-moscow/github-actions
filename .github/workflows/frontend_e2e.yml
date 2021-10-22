@@ -258,7 +258,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: cypress-${{ project_name }}
+          name: cypress-${{ env.project_name }}
           path: cypress
           retention-days: 1
 
