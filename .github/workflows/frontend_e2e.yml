@@ -61,7 +61,7 @@ on:
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       retries: ${{ inputs.retries }}
       CYPRESS_username: "${{ secrets.cypress_login }}"
@@ -258,7 +258,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: cypress
+          name: cypress-${{ project_name }}
           path: cypress
           retention-days: 1
 
