@@ -133,6 +133,15 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v1
 
+      - name: Set project path
+        run: |
+          if [[ $REPOSITORY == "frontend-core-v2" ]]; then
+            echo "octopus_project_name=CoreFrontend" >> $GITHUB_ENV
+          else
+            echo "octopus_project_name=$REPOSITORY" >> $GITHUB_ENV
+        env:
+          REPOSITORY: ${{ steps.set_variables.outputs.repository_name }}
+
       - name: generate release number
         id: release-number
         uses: mindbox-moscow/gha-release-number@v1.0.1
@@ -165,7 +174,7 @@ jobs:
         run: cp ./package.json ./build/
 
       - name: Create artifact
-        run: zip -r ${{ steps.set_variables.outputs.repository_name }}.${{ steps.release-number.outputs.release-number }}.zip ./build
+        run: zip -r ${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip ./build
 
       - name: Install e2e deps
         if: ${{ inputs.e2e_tag }}
@@ -227,7 +236,7 @@ jobs:
         with:
           args: >
             push
-            --package="./${{ steps.set_variables.outputs.repository_name }}.${{ steps.release-number.outputs.release-number }}.zip"
+            --package="./${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip"
             --server ${{ secrets.octopus_server }}
             --apikey ${{ secrets.octopus_api_key }}
 
@@ -237,12 +246,12 @@ jobs:
           args: >
             create-release
             --server ${{ secrets.octopus_server }}
-            --project "${{ steps.set_variables.outputs.repository_name }}"
+            --project "${{ env.octopus_project_name }}"
             --version ${{ steps.release-number.outputs.release-number }}
             --channel Default
             --tenant=*
             --apikey ${{ secrets.octopus_api_key }}
-            --releasenotes "[View change log](https://github.com/mindbox-moscow/frontend-retail/releases/tag/${{ steps.release-number.outputs.release-number }})"
+            --releasenotes "[View change log](https://github.com/mindbox-moscow/${{ steps.set_variables.outputs.repository_name }}/releases/tag/${{ steps.release-number.outputs.release-number }})"
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
