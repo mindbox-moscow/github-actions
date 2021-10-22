@@ -225,8 +225,8 @@ jobs:
       - name: Create e2e tests list
         if: ${{ inputs.core_project }}
         run: |
-          yc config profile create cleaner
-          echo '${{ secrets.CONTAINER_REGISTRY_KEY }}' >> iam_key.json | yc config set service-account-key iam_key.json
+          yc config profile create frontend-ci
+          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
           rm iam_key.json
           curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]" | sed 's/-latest//g'  > ./e2e_tests.txt
         env:

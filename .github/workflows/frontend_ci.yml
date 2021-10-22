@@ -183,7 +183,7 @@ jobs:
       - name: Create e2e tests list
         run: |
           yc config profile create frontend-ci
-          echo '${{ secrets.CONTAINER_REGISTRY_KEY }}' >> iam_key.json | yc config set service-account-key iam_key.json
+          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
           rm iam_key.json
           curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]" | sed 's/-latest//g'  > ./build/e2e_tests.txt
         env:
@@ -208,8 +208,6 @@ jobs:
       - name: Remove old e2e image
         if: ${{ inputs.e2e_tag }}
         run: |
-          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
-          rm iam_key.json
           imageId=$(curl -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r '.images[] | select(.tags[]? == "${{ env.e2e-tag }}") | .id')
           curl -X DELETE -H "Authorization: Bearer $(yc iam create-token)" $URL/$imageId
         env:
