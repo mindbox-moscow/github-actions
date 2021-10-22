@@ -243,13 +243,13 @@ jobs:
 
             docker run -i \
               --pull always \
-              -e BASE_URL="$BASE_URL" \
-              -e RETRIES="$RETRIES" \
-              -e CYPRESS_username=$(get_octopusvariable "username") \
-              -e CYPRESS_password=$(get_octopusvariable "password") \
+              -e BASE_URL="${{ env.E2E_URL }}" \
+              -e RETRIES="${{ env.retries }}" \
+              -e CYPRESS_username=${{ secrets.cypress_login }} \
+              -e CYPRESS_password=${{ secrets.cypress_pass }} \
               -v ./cypress/$e2e/videos:/e2e/cypress/videos \
               -v ./cypress/$e2e/screenshots:/e2e/cypress/screenshots \
-              cr.yandex/crpo9tj76o3c7pi8i72n/frontend-e2e:$e2e-latest 2>&1
+              cr.yandex/${{ inputs.registry_id }}/frontend-e2e:$e2e-latest 2>&1
           done
 
       - name: Upload test results artifacts
