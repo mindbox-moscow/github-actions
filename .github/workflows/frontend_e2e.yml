@@ -231,11 +231,9 @@ jobs:
           curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]" | sed 's/-latest//g'  > ./e2e_tests.txt
         env:
           URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
-        working-directory: e2e
 
       - name: Run E2E tests on core project.
         if: ${{ inputs.core_project }}
-        working-directory: e2e
         run: |
           IFS=$'\n'; set -f; E2E_TESTS=($(cat ./e2e_tests.txt))
           for e2e in "${E2E_TESTS[@]}"
