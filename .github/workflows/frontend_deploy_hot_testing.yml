@@ -2,9 +2,6 @@ name: Deploy Hot-testing container
 
 on:
   workflow_call:
-    branches-ignore:
-      - 'master'
-      - 'LocalizationPull*'
     inputs:
       registry_id:
         description: "YC registry ID"
@@ -53,6 +50,7 @@ jobs:
   hot-testing:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: ${{ !contains(github.ref, 'LocalizationPull') }}
     env:
       registry: cr.yandex/${{ inputs.registry_id }}
       image: ${{ inputs.image_name }}
