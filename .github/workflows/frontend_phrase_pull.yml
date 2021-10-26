@@ -9,6 +9,9 @@ on:
       slack_webhook_url:
         description: 'A SLACK_WEBHOOK_TO_NEW_TRANSLATIONS token passed from the caller workflow'
         required: true
+      frontend_gha_full_token:
+        description: 'A FRONTEND_GHA_FULL_TOKEN token passed from the caller workflow'
+        required: true
 
 jobs:
 
@@ -18,7 +21,7 @@ jobs:
 
     env:
       COMMAND: pull
-      gitHubToken: ${{ secrets.GH_FULL_TOKEN }}
+      gitHubToken: ${{ secrets.frontend_gha_full_token }}
       phraseAppToken: ${{ secrets.phrase_app_token }}
       slackWebhookUrl: ${{ secrets.slack_webhook_url }}
 
@@ -29,7 +32,7 @@ jobs:
       uses: mindbox-moscow/gha-phrase-integration@master
       with:
         command: push
-        gitHubToken: ${{ secrets.GH_FULL_TOKEN }}
+        gitHubToken: ${{ secrets.frontend_gha_full_token }}
         phraseAppToken: ${{ secrets.phrase_app_token }}
         slackWebhookUrl: ${{ secrets.slack_webhook_url }}
 
@@ -37,6 +40,6 @@ jobs:
       uses: mindbox-moscow/gha-phrase-integration@master
       with:
         command: pull
-        gitHubToken: ${{ secrets.GH_FULL_TOKEN }}
+        gitHubToken: ${{ secrets.frontend_gha_full_token }}
         phraseAppToken: ${{ secrets.phrase_app_token }}
         slackWebhookUrl: ${{ secrets.slack_webhook_url }}
