@@ -50,6 +50,7 @@ jobs:
   hot-testing:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: ${{ !contains(github.ref, 'LocalizationPull') }}
     env:
       registry: cr.yandex/${{ inputs.registry_id }}
       image: ${{ inputs.image_name }}
