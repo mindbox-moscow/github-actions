@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 forceRunAll="$1"
 instancesDir="$2"
 IFS=', ' read -r -a additionalPaths <<< "$3"
