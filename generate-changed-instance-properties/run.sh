@@ -68,6 +68,8 @@ if [[ $first_time == "no" ]]; then
   fi
 fi
 
+set -x
+
 echo "::set-output name=continue::${continue}"
 echo "::set-output name=version::${version}"
 echo "::set-output name=first_time::${first_time}"
