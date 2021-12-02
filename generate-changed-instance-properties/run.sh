@@ -31,7 +31,7 @@ function get_tag_name {
     exit 2
   fi
 
-  local latest_version=$(echo ${latest_tags[0]} | sed "s/$1-//")
+  local latest_version=$(echo ${latest_tags[0]} | sed "s/[^0-9]*//")
 
   get_tag_name_output="$(increment_version $latest_version)"
 
