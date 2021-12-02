@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 name="$1"
 IFS=', ' read -r -a dirs <<< "$2"
 
@@ -67,8 +69,6 @@ if [[ $first_time == "no" ]]; then
     continue="yes"
   fi
 fi
-
-set -x
 
 echo "::set-output name=continue::${continue}"
 echo "::set-output name=version::${version}"
