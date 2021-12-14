@@ -62,6 +62,42 @@ on:
       failure_notify_url:
         description: 'A url where to send a crash notification'
         required: false
+      sentry_main_auth_token:
+        description: 'Sentry errors mindbox auth token'
+        required: false
+      sentry_main_dsn:
+        description: 'Sentry errors mindbox dsn'
+        required: false
+      sentry_main_enabled:
+        description: 'Sentry errors mindbox enabled'
+        required: false
+      sentry_main_org:
+        description: 'Sentry errors mindbox organisation'
+        required: false
+      sentry_main_project:
+        description: 'Sentry errors mindbox project'
+        required: false
+      sentry_main_url:
+        description: 'Sentry errors mindbox url'
+        required: false
+      sentry_autobugs_auth_token:
+        description: 'Sentry autobugs mindbox auth token'
+        required: false
+      sentry_autobugs_dsn:
+        description: 'Sentry autobugs mindbox dsn'
+        required: false
+      sentry_autobugs_enabled:
+        description: 'Sentry autobugs mindbox enabled'
+        required: false
+      sentry_autobugs_org:
+        description: 'Sentry autobugs mindbox organisation'
+        required: false
+      sentry_autobugs_project:
+        description: 'Sentry autobugs mindbox project'
+        required: false
+      sentry_autobugs_url:
+        description: 'Sentry autobugs mindbox url'
+        required: false
 
 jobs:
   checking:
@@ -170,6 +206,20 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token }}
+          SENTRY_MAIN_AUTH_TOKEN: ${{ secrets.sentry_main_auth_token }}
+          SENTRY_MAIN_DSN: ${{ secrets.sentry_main_dsn }}
+          SENTRY_MAIN_ENABLED: ${{ secrets.sentry_main_enabled }}
+          SENTRY_MAIN_ORG: ${{ secrets.sentry_main_org }}
+          SENTRY_MAIN_PROJECT: ${{ secrets.sentry_main_project }}
+          SENTRY_MAIN_URL: ${{ secrets.sentry_main_url }}
+          SENTRY_MAIN_RELEASE: ${{ steps.release-number.outputs.release-number }}
+          SENTRY_AUTOBUGS_AUTH_TOKEN: ${{ secrets.sentry_autobugs_auth_token }}
+          SENTRY_AUTOBUGS_DSN: ${{ secrets.sentry_autobugs_dsn }}
+          SENTRY_AUTOBUGS_ENABLED: ${{ secrets.sentry_autobugs_enabled }}
+          SENTRY_AUTOBUGS_ORG: ${{ secrets.sentry_autobugs_org }}
+          SENTRY_AUTOBUGS_PROJECT: ${{ secrets.sentry_autobugs_project }}
+          SENTRY_AUTOBUGS_URL: ${{ secrets.sentry_autobugs_url }}
+          SENTRY_AUTOBUGS_RELEASE: ${{ steps.release-number.outputs.release-number }}
 
       - name: Copy package.json to build folder
         run: cp ./package.json ./build/
