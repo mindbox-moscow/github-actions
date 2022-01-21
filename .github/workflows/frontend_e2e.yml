@@ -61,7 +61,7 @@ on:
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     if: ${{ !contains(github.ref, 'LocalizationPull') }}
     env:
       retries: ${{ inputs.retries }}
