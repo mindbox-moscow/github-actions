@@ -93,8 +93,10 @@ jobs:
           project_name=$(cat ./package.json | jq .name | sed -s 's/@mindbox-moscow\///g' | sed -s 's/-/_/g' | sed -s 's/"//g')
           if [[ $project_name == "frontend_core_v2" ]]; then
             echo "project_folder=core" >> $GITHUB_ENV
+            echo "project_name=core" >> $GITHUB_ENV
           else
             echo "project_folder=$project_name" >> $GITHUB_ENV
+            echo "project_name=$project_name" >> $GITHUB_ENV
           fi
         id: set_project
 
@@ -260,7 +262,7 @@ jobs:
         if: failure()
         with:
           name: cypress-${{ env.project_name }}
-          path: cypress
+          path: e2e/cypress
           retention-days: 1
 
       - name: Add comment to commit if the job has failed
