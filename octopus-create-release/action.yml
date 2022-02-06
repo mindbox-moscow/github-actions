@@ -42,7 +42,7 @@ runs:
 
     - name: Last release (check mode)
       if: ${{ inputs.mode == 'check' }}
-      id: last_releases_octopus
+      id: last_releases_octopus_check_mode
       run: >
         echo "::set-output name=last_release_version::$(
         octo list-latestdeployments 
@@ -66,11 +66,13 @@ runs:
       shell: bash
 
     - name: Create Release Notes File
+      env:
+        LAST_RELEASE_VERSION: "${{ inputs.mode == 'release' && steps.last_releases_octopus.outputs.last_release_version || steps.last_releases_octopus_check_mode.outputs.last_release_version }}"
       run: |
         $global:github_repository="${{ inputs.github-repository }}"
         $global:github_token="${{ inputs.github-token }}"
         $global:current_commitId="${{ inputs.github-sha }}"
-        $global:last_release_version="${{ steps.last_releases_octopus.outputs.last_release_version }}"
+        $global:last_release_version="${{ env.LAST_RELEASE_VERSION }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
@@ -88,7 +90,6 @@ runs:
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
           --releaseNoteFile releasenotes.txt
-      shell: bash
 
     - name: "Create ${{ matrix.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -108,4 +109,3 @@ runs:
           --releaseNoteFile releasenotes.txt 
           --progress
           ${{ inputs.additional_params_values }}
-      shell: bash
