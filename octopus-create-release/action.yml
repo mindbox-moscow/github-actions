@@ -9,9 +9,12 @@ inputs:
     description: 'Space in Octopus'
     required: false
     default: 'Spaces-1'
-  matrix:
-    description: 'List or Dictionary(with environment) of Projects for Release'
+  project:
+    description: 'Project'
     required: true
+  env:
+    description: 'Project Env'
+    required: false
   release-number:
     description: 'Release Number from GitHub'
     required: true
@@ -46,8 +49,8 @@ runs:
       run: >
         echo "::set-output name=last_release_version::$(
         octo list-latestdeployments 
-        --project='${{ inputs.matrix.project }}' 
-        --environment=${{ inputs.matrix.env }} 
+        --project='${{ inputs.project }}' 
+        --environment=${{ inputs.env }} 
         --server=${{ inputs.octopus-server }} 
         --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
         grep -o 'Version:.*' | awk '{ print $2 }')"
@@ -59,7 +62,7 @@ runs:
       run: >
         echo "::set-output name=last_release_version::$(
         octo list-latestdeployments 
-        --project='${{ inputs.matrix.project }}' 
+        --project='${{ inputs.project }}' 
         --server=${{ inputs.octopus-server }} 
         --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
         grep -o 'Version:.*' | awk '{ print $2 }')"
@@ -77,31 +80,31 @@ runs:
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
 
-    - name: "Create ${{ matrix.octopus-project }} Octopus Release"
+    - name: "Create ${{ inputs.project }} Octopus Release"
       if: ${{ inputs.mode == 'release' }}
       uses: docker://octopusdeploy/octo
       with:
         args: >
           create-release
           --server ${{ inputs.octopus-server }}
-          --project "${{ inputs.matrix.octopus-project }}"
+          --project "${{ inputs.project }}"
           --version ${{ inputs.release-number }}
           --packageVersion ${{ inputs.release-number }}
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
           --releaseNoteFile releasenotes.txt
 
-    - name: "Create ${{ matrix.project }} Octopus Helm Diff"
+    - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
       uses: docker://octopusdeploy/octo
       with:
         args: >
           create-release
           --server ${{ inputs.octopus-server }}
-          --project "${{ inputs.matrix.project }}"
+          --project "${{ inputs.project }}"
           --apikey ${{ inputs.octopus-api-key }}
           --package "*:*:${{ inputs.release-number }}"
-          --deployTo "${{ inputs.matrix.env }}"
+          --deployTo "${{ inputs.env }}"
           --waitForDeployment
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
