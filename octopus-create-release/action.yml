@@ -33,6 +33,7 @@ inputs:
   additional_params_values:
     description: 'Additional Parameters and Values for Creating Release'
     required: false
+outputs: {}
 runs:
   using: "composite"
   steps:
@@ -50,6 +51,7 @@ runs:
         --server=${{ inputs.octopus-server }} 
         --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
         grep -o 'Version:.*' | awk '{ print $2 }')"
+      shell: bash
     
     - name: Last release
       if: ${{ inputs.mode == 'release' }}
@@ -61,6 +63,7 @@ runs:
         --server=${{ inputs.octopus-server }} 
         --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
         grep -o 'Version:.*' | awk '{ print $2 }')"
+      shell: bash
 
     - name: Create Release Notes File
       run: |
@@ -85,6 +88,7 @@ runs:
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
           --releaseNoteFile releasenotes.txt
+      shell: bash
 
     - name: "Create ${{ matrix.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -104,3 +108,4 @@ runs:
           --releaseNoteFile releasenotes.txt 
           --progress
           ${{ inputs.additional_params_values }}
+      shell: bash
