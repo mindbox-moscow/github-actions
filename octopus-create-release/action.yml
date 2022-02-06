@@ -1,0 +1,91 @@
+name: 'Create Release'
+description: 'Create Release for Octopus'
+inputs:
+  mode:
+    description: 'Mode: check/release'
+    required: false
+    default: 'release'
+  space:
+    description: 'Space in Octopus'
+    required: false
+    default: 'Spaces-1'
+  matrix:
+    description: 'List or Dictionary(with environment) of Projects for Release'
+    required: true
+  release-number:
+    description: 'Release Number from GitHub'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.9
+
+    - name: Last release (check mode)
+      if: ${{ inputs.mode == 'check' }}
+      id: last_releases_octopus
+      run: >
+        echo "::set-output name=last_release_version::$(
+        octo list-latestdeployments 
+        --project='${{ inputs.matrix.project }}' 
+        --environment=${{ inputs.matrix.env }} 
+        --server=${{ secrets.OCTOPUS_SERVER }} 
+        --apiKey=${{ secrets.OCTOPUS_API_KEY }} --space=${{ inputs.space }} | 
+        grep -o 'Version:.*' | awk '{ print $2 }')"
+    
+    - name: Last release
+      if: ${{ inputs.mode == 'release' }}
+      id: last_releases_octopus
+      run: >
+        echo "::set-output name=last_release_version::$(
+        octo list-latestdeployments 
+        --project='${{ inputs.matrix.project }}' 
+        --server=${{ secrets.OCTOPUS_SERVER }} 
+        --apiKey=${{ secrets.OCTOPUS_API_KEY }} --space=${{ inputs.space }} | 
+        grep -o 'Version:.*' | awk '{ print $2 }')"
+
+    - name: Create Release Notes File
+      run: |
+        $global:github_repository="${{ github.repository }}"
+        $global:github_token="${{ secrets.GITHUB_TOKEN }}"
+        $global:current_commitId="${{ github.sha }}"
+        $global:last_release_version="${{ steps.last_releases_octopus.outputs.last_release_version }}"
+        $global:release_version="${{ inputs.release-number }}"
+        ${{ github.action_path }}/release-gen.ps1
+      shell: pwsh
+
+    - name: "Create ${{ matrix.octopus-project }} Octopus Release"
+      if: ${{ inputs.mode == 'release' }}
+      uses: docker://octopusdeploy/octo
+      with:
+        args: >
+          create-release
+          --server ${{ secrets.OCTOPUS_SERVER }}
+          --project "${{ inputs.matrix.octopus-project }}"
+          --version ${{ inputs.release-number }}
+          --packageVersion ${{ inputs.release-number }}
+          --channel Default
+          --apikey ${{ secrets.OCTOPUS_API_KEY }}
+          --releaseNoteFile releasenotes.txt
+
+    - name: "Create ${{ matrix.project }} Octopus Helm Diff"
+      if: ${{ inputs.mode == 'check' }}
+      uses: docker://octopusdeploy/octo
+      with:
+        args: >
+          create-release
+          --server ${{ secrets.OCTOPUS_SERVER }}
+          --project "${{ inputs.matrix.project }}"
+          --apikey ${{ secrets.OCTOPUS_API_KEY }}
+          --package "*:*:${{ inputs.release-number }}"
+          --deployTo "${{ inputs.matrix.env }}"
+          --waitForDeployment
+          --version "${{ inputs.release-number }}"
+          --cancelOnTimeout
+          --deploymentTimeout "00:20:00"
+          --releaseNoteFile releasenotes.txt 
+          --progress
+          --skip "helmfile apply with crd"
+          --skip "helmfile apply"
+          --skip "confirm helmfile with crd"
+          --skip "confirm helmfile"
