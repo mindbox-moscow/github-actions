@@ -15,6 +15,24 @@ inputs:
   release-number:
     description: 'Release Number from GitHub'
     required: true
+  octopus-server:
+    description: 'Octopus Server'
+    required: true
+  octopus-api-key:
+    description: 'Octopus Api Key'
+    required: true
+  github-token:
+    description: 'GitHub Token'
+    required: true
+  github-repository:
+    description: 'GitHub Repository'
+    required: true
+  github-sha:
+    description: 'Current Commit'
+    required: true
+  additional_params_values:
+    description: 'Additional Parameters and Values for Creating Release'
+    required: false
 runs:
   using: "composite"
   steps:
@@ -29,8 +47,8 @@ runs:
         octo list-latestdeployments 
         --project='${{ inputs.matrix.project }}' 
         --environment=${{ inputs.matrix.env }} 
-        --server=${{ secrets.OCTOPUS_SERVER }} 
-        --apiKey=${{ secrets.OCTOPUS_API_KEY }} --space=${{ inputs.space }} | 
+        --server=${{ inputs.octopus-server }} 
+        --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
         grep -o 'Version:.*' | awk '{ print $2 }')"
     
     - name: Last release
@@ -40,15 +58,15 @@ runs:
         echo "::set-output name=last_release_version::$(
         octo list-latestdeployments 
         --project='${{ inputs.matrix.project }}' 
-        --server=${{ secrets.OCTOPUS_SERVER }} 
-        --apiKey=${{ secrets.OCTOPUS_API_KEY }} --space=${{ inputs.space }} | 
+        --server=${{ inputs.octopus-server }} 
+        --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
         grep -o 'Version:.*' | awk '{ print $2 }')"
 
     - name: Create Release Notes File
       run: |
-        $global:github_repository="${{ github.repository }}"
-        $global:github_token="${{ secrets.GITHUB_TOKEN }}"
-        $global:current_commitId="${{ github.sha }}"
+        $global:github_repository="${{ inputs.github-repository }}"
+        $global:github_token="${{ inputs.github-token }}"
+        $global:current_commitId="${{ inputs.github-sha }}"
         $global:last_release_version="${{ steps.last_releases_octopus.outputs.last_release_version }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
@@ -60,12 +78,12 @@ runs:
       with:
         args: >
           create-release
-          --server ${{ secrets.OCTOPUS_SERVER }}
+          --server ${{ inputs.octopus-server }}
           --project "${{ inputs.matrix.octopus-project }}"
           --version ${{ inputs.release-number }}
           --packageVersion ${{ inputs.release-number }}
           --channel Default
-          --apikey ${{ secrets.OCTOPUS_API_KEY }}
+          --apikey ${{ inputs.octopus-api-key }}
           --releaseNoteFile releasenotes.txt
 
     - name: "Create ${{ matrix.project }} Octopus Helm Diff"
@@ -74,9 +92,9 @@ runs:
       with:
         args: >
           create-release
-          --server ${{ secrets.OCTOPUS_SERVER }}
+          --server ${{ inputs.octopus-server }}
           --project "${{ inputs.matrix.project }}"
-          --apikey ${{ secrets.OCTOPUS_API_KEY }}
+          --apikey ${{ inputs.octopus-api-key }}
           --package "*:*:${{ inputs.release-number }}"
           --deployTo "${{ inputs.matrix.env }}"
           --waitForDeployment
@@ -85,7 +103,4 @@ runs:
           --deploymentTimeout "00:20:00"
           --releaseNoteFile releasenotes.txt 
           --progress
-          --skip "helmfile apply with crd"
-          --skip "helmfile apply"
-          --skip "confirm helmfile with crd"
-          --skip "confirm helmfile"
+          ${{ inputs.additional_params_values }}
