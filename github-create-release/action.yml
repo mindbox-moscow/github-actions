@@ -39,8 +39,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
-        tag_name: ${{ ${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }} }}
-        release_name: "Release ${{ ${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }} }}"
+        tag_name: ${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }}
+        release_name: "Release ${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }}"
         body_path: releasenotes.txt
         draft: false
         prerelease: ${{ inputs.prerelease }}
