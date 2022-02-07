@@ -24,6 +24,16 @@ $github = New-Module -ScriptBlock {
 		Write-Host ($url)
         return  Invoke-RestMethod -Uri $url -Verbose -Headers $headers
     }
+
+    function GetLastReleaseVersion {
+        $headers = @{
+		    'Authorization' = 'token ' + $github_token
+		    'Accept' = 'application/vnd.github.v3+json'
+		}
+		$url = "https://api.github.com/repos/$github_repository/releases/latest"
+		Write-Host ($url)
+        return  Invoke-RestMethod -Uri $url -Verbose -Headers $headers
+    }
  
     Export-ModuleMember -Function GetCommits
 } -AsCustomObject
@@ -34,10 +44,13 @@ $github = New-Module -ScriptBlock {
 
 Write-Host ("Getting all commits from git tag v" + $last_release_version + " to commit sha $current_commitId.")
 
-$response = $github.GetCommits($last_release_version, $current_commitId)
+$response_last_release_version = $github.GetLastReleaseVersion()
+$last_release_version = $response_last_release_version.tag_name
+Write-Host $response_last_release_version
+Write-Host $last_release_version
 
-$commits = $response.commits | Sort-Object -Property @{Expression={$_.commit.author.date}; Ascending=$false} -Descending
-
+$response_commits = $github.GetCommits($last_release_version, $current_commitId)
+$commits = $response_commits.commits | Sort-Object -Property @{Expression={$_.commit.author.date}; Ascending=$false} -Descending
 #
 # Generate release notes based on commits and issues
 # ---------------------------------------------------------
