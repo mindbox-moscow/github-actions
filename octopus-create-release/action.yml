@@ -31,6 +31,11 @@ outputs: {}
 runs:
   using: "composite"
   steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: release-notes-artifact
+        path: releasenotes.txt
+        
     - name: Create Release Notes File
       if: hashFiles('releasenotes.txt') == ''
       run: |
