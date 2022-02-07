@@ -96,3 +96,4 @@ else {
 }
 
 New-Item $github_workspace/releasenotes.txt -type file -force -value $releaseNotes
+Write-Output "::set-env name=RELEASE_NOTES::$releaseNotes.Replace($nl, '\n')"
