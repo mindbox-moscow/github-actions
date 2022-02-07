@@ -19,6 +19,7 @@ runs:
       uses: actions/checkout@master
 
     - name: generate release number
+      if: ${{ !inputs.prerelease }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
@@ -29,7 +30,7 @@ runs:
         $global:github_repository="${{ github.repository }}"
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
-        $global:release_version="${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }}"
+        $global:release_version="${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
 
@@ -39,8 +40,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
-        tag_name: ${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }}
-        release_name: "Release ${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }}"
+        tag_name: ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}
+        release_name: "Release ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
         body_path: releasenotes.txt
         draft: false
         prerelease: ${{ inputs.prerelease }}

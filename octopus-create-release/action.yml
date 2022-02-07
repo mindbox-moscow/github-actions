@@ -19,7 +19,7 @@ inputs:
     description: 'Release Number from GitHub'
     required: true
   octopus-server:
-    description: 'Octopus Server'
+    description: 'Octopus Server Url'
     required: true
   octopus-api-key:
     description: 'Octopus Api Key'
