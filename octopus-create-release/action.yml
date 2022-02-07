@@ -57,10 +57,6 @@ runs:
       run: ls -la
       shell: bash
 
-    - name : debug
-      run: ls -la /home/runner/work/_temp/_github_home
-      shell: bash
-
     - name: "Create ${{ inputs.project }} Octopus Release"
       if: ${{ inputs.mode == 'release' }}
       uses: docker://octopusdeploy/octo
