@@ -40,13 +40,17 @@ outputs: {}
 runs:
   using: "composite"
   steps:
+    - name: Retrieve last release version
+      run: |
+        echo "::set-output name=VERSION::$(git ls-remote --refs --sort="version:refname" --tags $repo | cut -d/ -f3- | tail -1)"
+      id: last_version
+
     - name: Create Release Notes File
       run: |
-        echo "LAST_RELEASE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags $repo | cut -d/ -f3- | tail -1)" >> $GITHUB_ENV
         $global:github_repository="${{ inputs.github-repository }}"
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
-        $global:last_release_version="${{ env.LAST_RELEASE_VERSION }}"
+        $global:last_release_version="${{ steps.last_release.outputs.VERSION }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
