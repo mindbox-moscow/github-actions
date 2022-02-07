@@ -51,21 +51,20 @@ runs:
     #     echo "::set-output name=VERSION::$(git ls-remote personal-remote --refs --sort="version:refname" | cut -d/ -f3- | tail -1)"
     #   id: last_version
     #   shell: bash
-    - id: latest_version
-      uses: pozetroninc/github-action-get-latest-release@master
-      with:
-        repository: ${{ github.repository }}
+    # - id: latest_version
+    #   uses: pozetroninc/github-action-get-latest-release@master
+    #   with:
+    #     repository: ${{ github.repository }}
 
     - name: Create Release Notes File
       run: |
         $global:github_repository="${{ inputs.github-repository }}"
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
-        $global:last_release_version="${{ steps.latest_version.outputs.release }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
-
+        # $global:last_release_version="${{ steps.latest_version.outputs.release }}"
     - name: "Create ${{ inputs.project }} Octopus Release"
       if: ${{ inputs.mode == 'release' }}
       uses: docker://octopusdeploy/octo
