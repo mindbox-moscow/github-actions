@@ -35,9 +35,15 @@ runs:
       with:
         name: release-notes-artifact
         path: /home/runner/work/${{ github.repository }}/releasenotes.txt
-        
+
+    - name: "Check release notes existence"
+      id: check_files
+      uses: andstor/file-existence-action@v1
+      with:
+        files: "/home/runner/work/${{ github.repository }}/releasenotes.txt"
+
     - name: Create Release Notes File
-      if: hashFiles('/home/runner/work/${{ github.repository }}/releasenotes.txt') == ''
+      if: steps.check_files.outputs.files_exists != 'true'
       run: |
         $global:github_repository="${{ github.repository }}"
         $global:github_token="${{ github.token }}"
