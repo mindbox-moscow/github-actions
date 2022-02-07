@@ -1,4 +1,4 @@
-name: 'Create Release'
+name: 'Create Octopus Release'
 description: 'Create Release for Octopus'
 inputs:
   mode:
@@ -24,15 +24,15 @@ inputs:
   octopus-api-key:
     description: 'Octopus Api Key'
     required: true
-  github-token:
-    description: 'GitHub Token'
-    required: true
+  # github-token:
+  #   description: 'GitHub Token'
+  #   required: true
   github-repository:
     description: 'GitHub Repository'
     required: true
-  github-sha:
-    description: 'Current Commit'
-    required: true
+  # github-sha:
+  #   description: 'Current Commit'
+  #   required: true
   additional_params_values:
     description: 'Additional Parameters and Values for Creating Release'
     required: false
@@ -40,59 +40,15 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - name: "call action"
-      id: last_release
-      uses: InsonusK/get-latest-release@v1.0.1
-      with:
-        myToken: ${{ inputs.github-token }}
-        exclude_types: "prerelease|draft"
-        view_top: 10
-
-    - name: "Print result"
-      run: |
-        echo "id: ${{ steps.last_release.outputs.id }}"
-        echo "name: ${{ steps.last_release.outputs.name }}"
-        echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
-        echo "created_at: ${{ steps.last_release.outputs.created_atd }}"
-        echo "draft: ${{ steps.last_release.outputs.draft }}"
-        echo "prerelease: ${{ steps.last_release.outputs.prerelease }}"
-      shell: bash
-
-    - name: Install Octopus CLI
-      uses: OctopusDeploy/install-octopus-cli-action@v1.1.9
-
-    - name: Last release (check mode)
-      if: ${{ inputs.mode == 'check' }}
-      id: last_releases_octopus_check_mode
-      run: >
-        echo "::set-output name=last_release_version::$(
-        octo list-latestdeployments 
-        --project='${{ inputs.project }}' 
-        --environment=${{ inputs.env }} 
-        --server=${{ inputs.octopus-server }} 
-        --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
-        grep -o 'Version:.*' | awk '{ print $2 }')"
-      shell: bash
-    
-    - name: Last release
-      if: ${{ inputs.mode == 'release' }}
-      id: last_releases_octopus
-      run: >
-        echo "::set-output name=last_release_version::$(
-        octo list-latestdeployments 
-        --project='${{ inputs.project }}' 
-        --server=${{ inputs.octopus-server }} 
-        --apiKey=${{ inputs.octopus-api-key }} --space=${{ inputs.space }} | 
-        grep -o 'Version:.*' | awk '{ print $2 }')"
-      shell: bash
+    - name: Set env
+      run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
 
     - name: Create Release Notes File
-      env:
-        LAST_RELEASE_VERSION: "${{ inputs.mode == 'release' && steps.last_releases_octopus.outputs.last_release_version || steps.last_releases_octopus_check_mode.outputs.last_release_version }}"
       run: |
+        echo "LAST_RELEASE_VERSION=$($(git ls-remote --refs --sort="version:refname" --tags $repo | cut -d/ -f3- | tail -1))" >> $GITHUB_ENV
         $global:github_repository="${{ inputs.github-repository }}"
-        $global:github_token="${{ inputs.github-token }}"
-        $global:current_commitId="${{ inputs.github-sha }}"
+        $global:github_token="${{ github.token }}"
+        $global:current_commitId="${{ github.sha }}"
         $global:last_release_version="${{ env.LAST_RELEASE_VERSION }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1

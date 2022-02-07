@@ -1,0 +1,29 @@
+name: 'Create GitHub Release'
+description: 'Create Release for GitHub'
+inputs:
+  mode:
+    description: 'Mode: check/release'
+    required: false
+    default: 'release'
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout"
+      uses: actions/checkout@master
+    
+    - name: ""
+      if: hashFiles('releasenotes.txt') != ''
+
+    - name: "Create GitHub Release"
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        BODY_PARAM:
+      with:
+        tag_name: ${{ env.release_version }}
+        release_name: "Release ${{ env.release_version }}"
+        body_path: 
+        draft: false
+        prerelease: true
