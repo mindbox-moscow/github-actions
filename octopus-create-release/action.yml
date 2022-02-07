@@ -57,7 +57,7 @@ runs:
         $global:github_repository="${{ inputs.github-repository }}"
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
-        $global:last_release_version="${{ steps.last_release.outputs.VERSION }}"
+        $global:last_release_version="${{ steps.latest_version.outputs.latest_tag }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
