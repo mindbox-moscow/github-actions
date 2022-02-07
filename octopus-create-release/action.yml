@@ -43,6 +43,7 @@ runs:
         files: "${{ github.workspace }}/releasenotes.txt"
 
     - name: Create Release Notes File
+      id: release-notes
       if: steps.check_files.outputs.files_exists != 'true'
       run: |
         $global:github_repository="${{ github.repository }}"
@@ -69,7 +70,7 @@ runs:
           --packageVersion ${{ inputs.release-number }}
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
-          --releasenotes ${{ env.RELEASE_NOTES }}
+          --releasenotes ${{ steps.release-notes.outputs.RELEASE_NOTES }}
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -86,6 +87,6 @@ runs:
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
-          --releasenotes ${{ env.RELEASE_NOTES }}  
+          --releasenotes ${{ steps.release-notes.outputs.RELEASE_NOTES }}  
           --progress
           ${{ inputs.additional_params_values }}
