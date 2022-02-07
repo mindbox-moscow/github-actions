@@ -24,15 +24,6 @@ inputs:
   octopus-api-key:
     description: 'Octopus Api Key'
     required: true
-  # github-token:
-  #   description: 'GitHub Token'
-  #   required: true
-  # github-repository:
-  #   description: 'GitHub Repository'
-  #   required: true
-  # github-sha:
-  #   description: 'Current Commit'
-  #   required: true
   additional_params_values:
     description: 'Additional Parameters and Values for Creating Release'
     required: false
@@ -41,6 +32,7 @@ runs:
   using: "composite"
   steps:
     - name: Create Release Notes File
+      if: hashFiles('releasenotes.txt') == ''
       run: |
         $global:github_repository="${{ github.repository }}"
         $global:github_token="${{ github.token }}"

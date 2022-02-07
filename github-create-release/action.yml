@@ -1,29 +1,53 @@
 name: 'Create GitHub Release'
 description: 'Create Release for GitHub'
 inputs:
-  mode:
-    description: 'Mode: check/release'
+  release-number:
+    description: 'Release number'
     required: false
-    default: 'release'
-outputs: {}
+  prerelease:
+    description: 'If prerelease - true, else release - false'
+    required: false
+    default: true
+outputs: 
+  release-number:
+    description: 'Created Release Number'
+    value: ${{ steps.create_release.outputs.release-number }}
 runs:
   using: "composite"
   steps:
     - name: "Checkout"
       uses: actions/checkout@master
-    
-    - name: ""
-      if: hashFiles('releasenotes.txt') != ''
+
+    - name: "Create GitHub Release"
+      if: ${{ inputs.prerelease == false }}
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: generate release number
+      id: release-number
+      uses: mindbox-moscow/gha-release-number@v1.0.1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release Notes File
+      run: |
+        $global:github_repository="${{ github.repository }}"
+        $global:github_token="${{ github.token }}"
+        $global:current_commitId="${{ github.sha }}"
+        $global:release_version="${{ inputs.prerelease == true && inputs.release-number || steps.release-number.outputs.release-number }}"
+        ${{ github.action_path }}/release-gen.ps1
+      shell: pwsh
 
     - name: "Create GitHub Release"
       id: create_release
       uses: actions/create-release@master
       env:
         GITHUB_TOKEN: ${{ github.token }}
-        BODY_PARAM:
       with:
-        tag_name: ${{ env.release_version }}
-        release_name: "Release ${{ env.release_version }}"
-        body_path: 
+        tag_name: ${{ inputs.release-number }}
+        release_name: "Release ${{ inputs.release-number }}"
+        body_path: releasenotes.txt
         draft: false
-        prerelease: true
+        prerelease: ${{ inputs.prerelease }}
