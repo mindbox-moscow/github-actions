@@ -40,24 +40,28 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - name: Get Latest Release
-      id: latest_version
-      uses: abatilo/release-info-action@v1.3.0
+    # - name: Get Latest Release
+    #   id: latest_version
+    #   uses: abatilo/release-info-action@v1.3.0
+    #   with:
+    #     owner: ${{ github.repository_owner }}
+    #     repo: helmfile
+    # - name: Retrieve last release version
+    #   run: |
+    #     echo "::set-output name=VERSION::$(git ls-remote personal-remote --refs --sort="version:refname" | cut -d/ -f3- | tail -1)"
+    #   id: last_version
+    #   shell: bash
+    - id: latest_version
+      uses: pozetroninc/github-action-get-latest-release@master
       with:
-        owner: ${{ github.repository_owner }}
-        repo: helmfile
-    - name: Retrieve last release version
-      run: |
-        echo "::set-output name=VERSION::$(git ls-remote personal-remote --refs --sort="version:refname" | cut -d/ -f3- | tail -1)"
-      id: last_version
-      shell: bash
+        repository: ${{ github.repository_owner }}
 
     - name: Create Release Notes File
       run: |
         $global:github_repository="${{ inputs.github-repository }}"
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
-        $global:last_release_version="${{ steps.latest_version.outputs.latest_tag }}"
+        $global:last_release_version="${{ steps.latest_version.outputs.release }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
