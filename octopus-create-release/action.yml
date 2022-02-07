@@ -45,7 +45,7 @@ runs:
       id: last_release
       with:
         repository: ${{ github.repository }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: "${{ github.token }}"
         type: "stable"
 
     - name: Create Release Notes File
