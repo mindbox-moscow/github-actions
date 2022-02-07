@@ -40,6 +40,12 @@ outputs: {}
 runs:
   using: "composite"
   steps:
+    - name: Get Latest Release
+      id: latest_version
+      uses: abatilo/release-info-action@v1.3.0
+      with:
+        owner: ${{ github.repository_owner }}
+        repo: helmfile
     - name: Retrieve last release version
       run: |
         echo "::set-output name=VERSION::$(git ls-remote personal-remote --refs --sort="version:refname" | cut -d/ -f3- | tail -1)"
