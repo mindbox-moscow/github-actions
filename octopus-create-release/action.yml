@@ -45,7 +45,7 @@ runs:
       uses: InsonusK/get-latest-release@v1.0.1
       with:
         myToken: ${{ inputs.github-token }}
-        exclude_types: "release"
+        exclude_types: "prerelease|draft"
         view_top: 1
 
     - name: "Print result"
