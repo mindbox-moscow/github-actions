@@ -41,17 +41,17 @@ runs:
   using: "composite"
   steps:
     - name: Retrieve last release version
-      run: |
-        echo "::set-output name=VERSION::$(git ls-remote --refs --sort="version:refname" --tags $repo | cut -d/ -f3- | tail -1)"
-      id: last_version
-      shell: bash
+      id: last_release
+      uses: pozetroninc/github-action-get-latest-release@master
+      with:
+        repository: ${{ github.repository }}
 
     - name: Create Release Notes File
       run: |
         $global:github_repository="${{ inputs.github-repository }}"
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
-        $global:last_release_version="${{ steps.last_release.outputs.VERSION }}"
+        $global:last_release_version="${{ steps.last_release.outputs.release }}"
         $global:release_version="${{ inputs.release-number }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
