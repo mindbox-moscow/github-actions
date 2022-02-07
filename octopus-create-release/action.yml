@@ -46,7 +46,7 @@ runs:
       with:
         myToken: ${{ inputs.github-token }}
         exclude_types: "prerelease|draft"
-        view_top: 1
+        view_top: 10
 
     - name: "Print result"
       run: |
