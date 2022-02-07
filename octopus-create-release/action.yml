@@ -54,7 +54,7 @@ runs:
     - id: latest_version
       uses: pozetroninc/github-action-get-latest-release@master
       with:
-        repository: ${{ github.repository_owner }}
+        repository: ${{ github.repository }}
 
     - name: Create Release Notes File
       run: |
