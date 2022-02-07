@@ -53,6 +53,14 @@ runs:
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
 
+    - name : debug
+      run: ls -la
+      shell: bash
+
+    - name : debug
+      run: ls -la ${{ github.workspace }}
+      shell: bash
+
     - name: "Create ${{ inputs.project }} Octopus Release"
       if: ${{ inputs.mode == 'release' }}
       uses: docker://octopusdeploy/octo
@@ -82,6 +90,6 @@ runs:
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
-          --releaseNoteFile releasenotes.txt
+          --releaseNoteFile ${{ github.workspace }}/releasenotes.txt  
           --progress
           ${{ inputs.additional_params_values }}
