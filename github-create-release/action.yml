@@ -22,7 +22,7 @@ runs:
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ github.token }}
 
     - name: Create Release Notes File
       run: |
