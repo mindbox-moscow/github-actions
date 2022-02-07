@@ -36,6 +36,7 @@ $github = New-Module -ScriptBlock {
     }
  
     Export-ModuleMember -Function GetCommits
+    Export-ModuleMember -Function GetLastReleaseVersion
 } -AsCustomObject
  
 #
