@@ -42,7 +42,7 @@ runs:
   steps:
     - name: Retrieve last release version
       run: |
-        echo "::set-output name=VERSION::$(git ls-remote --refs --sort="version:refname" | cut -d/ -f3- | tail -1)"
+        echo "::set-output name=VERSION::$(git ls-remote personal-remote --refs --sort="version:refname" | cut -d/ -f3- | tail -1)"
       id: last_version
       shell: bash
 
