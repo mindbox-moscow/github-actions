@@ -48,6 +48,6 @@ runs:
       with:
         tag_name: ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}
         release_name: "Release ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
-        body_path: releasenotes.txt
+        body_path: /home/runner/work/${{ github.repository }}/releasenotes.txt
         draft: false
         prerelease: ${{ inputs.prerelease }}
