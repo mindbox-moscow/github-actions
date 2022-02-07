@@ -56,6 +56,7 @@ runs:
         echo "created_at: ${{ steps.last_release.outputs.created_atd }}"
         echo "draft: ${{ steps.last_release.outputs.draft }}"
         echo "prerelease: ${{ steps.last_release.outputs.prerelease }}"
+      shell: bash
 
     - name: Install Octopus CLI
       uses: OctopusDeploy/install-octopus-cli-action@v1.1.9
