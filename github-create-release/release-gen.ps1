@@ -21,7 +21,6 @@ $github = New-Module -ScriptBlock {
 		    'Accept' = 'application/vnd.github.v3+json'
 		}
 		$url = "https://api.github.com/repos/$github_repository/compare/" + $base + "..." + $head
-		Write-Host ($url)
         return  Invoke-RestMethod -Uri $url -Verbose -Headers $headers
     }
 
@@ -31,7 +30,6 @@ $github = New-Module -ScriptBlock {
 		    'Accept' = 'application/vnd.github.v3+json'
 		}
 		$url = "https://api.github.com/repos/$github_repository/releases/latest"
-		Write-Host ($url)
         return  Invoke-RestMethod -Uri $url -Verbose -Headers $headers
     }
  
@@ -47,8 +45,6 @@ Write-Host ("Getting all commits from git tag v" + $last_release_version + " to 
 
 $response_last_release_version = $github.GetLastReleaseVersion()
 $last_release_version = $response_last_release_version.tag_name
-Write-Host $response_last_release_version
-Write-Host $last_release_version
 
 $response_commits = $github.GetCommits($last_release_version, $current_commitId)
 $commits = $response_commits.commits | Sort-Object -Property @{Expression={$_.commit.author.date}; Ascending=$false} -Descending
