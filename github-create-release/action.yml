@@ -26,6 +26,7 @@ runs:
         token: ${{ github.token }}
 
     - name: Create Release Notes File
+      id: release-notes
       run: |
         $global:github_repository="${{ github.repository }}"
         $global:github_token="${{ github.token }}"
@@ -49,6 +50,6 @@ runs:
       with:
         tag_name: ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}
         release_name: "Release ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
-        body: ${{ env.RELEASE_NOTES }}
+        body: ${{ steps.release-notes.outputs.RELEASE_NOTES }}
         draft: false
         prerelease: ${{ inputs.prerelease }}
