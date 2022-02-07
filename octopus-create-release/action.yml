@@ -40,9 +40,6 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - name: Set env
-      run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
-
     - name: Create Release Notes File
       run: |
         echo "LAST_RELEASE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags $repo | cut -d/ -f3- | tail -1)" >> $GITHUB_ENV
