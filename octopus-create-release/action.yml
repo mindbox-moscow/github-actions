@@ -58,7 +58,7 @@ runs:
       shell: bash
 
     - name : debug
-      run: ls -la ${{ github.workspace }}
+      run: ls -la /home/runner/work/_temp/_github_home
       shell: bash
 
     - name: "Create ${{ inputs.project }} Octopus Release"
@@ -73,7 +73,7 @@ runs:
           --packageVersion ${{ inputs.release-number }}
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
-          --releaseNoteFile ${{ github.workspace }}/releasenotes.txt
+          --releaseNoteFile /github/workspace/releasenotes.txt
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -90,6 +90,6 @@ runs:
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
-          --releaseNoteFile ${{ github.workspace }}/releasenotes.txt  
+          --releaseNoteFile /github/workspace/releasenotes.txt  
           --progress
           ${{ inputs.additional_params_values }}
