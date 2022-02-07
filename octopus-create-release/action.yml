@@ -37,7 +37,7 @@ runs:
         path: /home/runner/work/${{ github.repository }}/releasenotes.txt
         
     - name: Create Release Notes File
-      if: hashFiles('releasenotes.txt') == ''
+      if: hashFiles('/home/runner/work/${{ github.repository }}/releasenotes.txt') == ''
       run: |
         $global:github_repository="${{ github.repository }}"
         $global:github_token="${{ github.token }}"
@@ -58,7 +58,7 @@ runs:
           --packageVersion ${{ inputs.release-number }}
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
-          --releaseNoteFile releasenotes.txt
+          --releaseNoteFile /home/runner/work/${{ github.repository }}/releasenotes.txt
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -75,6 +75,6 @@ runs:
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
-          --releaseNoteFile releasenotes.txt 
+          --releaseNoteFile /home/runner/work/${{ github.repository }}/releasenotes.txt
           --progress
           ${{ inputs.additional_params_values }}

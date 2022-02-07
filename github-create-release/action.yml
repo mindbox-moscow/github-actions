@@ -7,7 +7,7 @@ inputs:
   prerelease:
     description: 'If prerelease - true, else release - false'
     required: false
-    default: true
+    default: false
 outputs: 
   release-number:
     description: 'Created Release Number'
@@ -38,7 +38,7 @@ runs:
       uses: actions/upload-artifact@master
       with:
         name: release-notes-artifact
-        path: releasenotes.txt
+        path: /home/runner/work/${{ github.repository }}/releasenotes.txt
 
     - name: "Create GitHub Release"
       id: create_release
