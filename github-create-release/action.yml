@@ -31,6 +31,7 @@ runs:
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
         $global:release_version="${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
+        $global:github_workspace="${{ github.workspace }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
 
@@ -38,7 +39,7 @@ runs:
       uses: actions/upload-artifact@master
       with:
         name: release-notes-artifact
-        path: /home/runner/work/${{ github.repository }}/releasenotes.txt
+        path: ${{ github.workspace }}/releasenotes.txt
 
     - name: "Create GitHub Release"
       id: create_release
@@ -48,6 +49,6 @@ runs:
       with:
         tag_name: ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}
         release_name: "Release ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
-        body_path: /home/runner/work/${{ github.repository }}/releasenotes.txt
+        body_path: ${{ github.workspace }}/releasenotes.txt
         draft: false
         prerelease: ${{ inputs.prerelease }}

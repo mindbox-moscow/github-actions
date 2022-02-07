@@ -95,4 +95,4 @@ else {
     $releaseNotes = $releaseNotes + "There are no new items for this release.$nl"
 }
 
-New-Item /home/runner/work/$github_repository/releasenotes.txt -type file -force -value $releaseNotes
+New-Item $github_workspace/releasenotes.txt -type file -force -value $releaseNotes

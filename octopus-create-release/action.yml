@@ -34,13 +34,13 @@ runs:
     - uses: actions/download-artifact@master
       with:
         name: release-notes-artifact
-        path: /home/runner/work/${{ github.repository }}/releasenotes.txt
+        path: ${{ github.workspace }}/releasenotes.txt
 
     - name: "Check release notes existence"
       id: check_files
       uses: andstor/file-existence-action@v1
       with:
-        files: "/home/runner/work/${{ github.repository }}/releasenotes.txt"
+        files: "${{ github.workspace }}/releasenotes.txt"
 
     - name: Create Release Notes File
       if: steps.check_files.outputs.files_exists != 'true'
@@ -49,6 +49,7 @@ runs:
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
         $global:release_version="${{ inputs.release-number }}"
+        $global:github_workspace="${{ github.workspace }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
 
@@ -64,7 +65,7 @@ runs:
           --packageVersion ${{ inputs.release-number }}
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
-          --releaseNoteFile /home/runner/work/${{ github.repository }}/releasenotes.txt
+          --releaseNoteFile ${{ github.workspace }}/releasenotes.txt
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -81,6 +82,6 @@ runs:
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
-          --releaseNoteFile /home/runner/work/${{ github.repository }}/releasenotes.txt
+          --releaseNoteFile releasenotes.txt
           --progress
           ${{ inputs.additional_params_values }}
