@@ -44,6 +44,7 @@ runs:
       run: |
         echo "::set-output name=VERSION::$(git ls-remote --refs --sort="version:refname" --tags $repo | cut -d/ -f3- | tail -1)"
       id: last_version
+      shell: bash
 
     - name: Create Release Notes File
       run: |
