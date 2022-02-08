@@ -31,7 +31,7 @@ runs:
         files: "releasenotes.txt"
 
     - name: Create Release Notes File
-      if: steps.check_files.outputs.files_exists != 'true'
+      if: steps.check_files.outputs.files_exists != 'true' && always()
       uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release-octopus
       with:
         release-number: "${{ inputs.release-number }}"
