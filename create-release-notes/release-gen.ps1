@@ -3,8 +3,7 @@
 # ---------------------------------------------------------
 # $global:github_repository = "GITHUB_REPOSITORY"
 # $global:github_token = "GitHub Personal Access Token"
-# $global:current_commitId = $env:APPVEYOR_REPO_COMMIT
-# $global:last_release_version = "Last release version"
+# $global:current_commitId = "Current Commit"
 # $global:release_version = "Release version"
 
 

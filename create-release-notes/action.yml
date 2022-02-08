@@ -20,7 +20,6 @@ runs:
         $global:github_token="${{ github.token }}"
         $global:current_commitId="${{ github.sha }}"
         $global:release_version="${{ inputs.release-number }}"
-        $global:github_workspace="${{ github.workspace }}"
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
     
