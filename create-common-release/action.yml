@@ -34,7 +34,7 @@ runs:
         token: ${{ github.token }}
 
     - name: Create Release Notes File
-      uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release-octopus
+      uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
       with:
         release-number: "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
 
