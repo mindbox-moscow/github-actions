@@ -4,6 +4,10 @@ inputs:
   release-number:
     description: 'Release number'
     required: false
+outputs: 
+  release-number:
+    description: 'Created Release Number'
+    value: ${{ steps.create_release.outputs.release-number }}
 runs:
   using: "composite"
   steps:
@@ -25,3 +29,4 @@ runs:
       with:
         name: release-notes-artifact
         path: releasenotes.txt
+    
