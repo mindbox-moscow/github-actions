@@ -47,33 +47,23 @@ runs:
       with:
         release-number: "${{ inputs.release-number }}"
 
-    # - name: "Create ${{ inputs.project }} Octopus Release"
-    #   if: ${{ inputs.mode == 'release' }}
-    #   uses: docker://octopusdeploy/octo
-    #   with:
-    #     args: >
-    #       create-release
-    #       --server ${{ inputs.octopus-server }}
-    #       --project "${{ inputs.project }}"
-    #       --apikey ${{ inputs.octopus-api-key }}
-    #       --version ${{ inputs.release-number }}
-    #       --releaseNoteFile releasenotes.txt
-
-    #       --packageVersion ${{ inputs.release-number }}
-    #       --channel Default
-
-    - name: "Create ${{ inputs.project }} ${{ inputs.mode == 'release' && 'Octopus Release' || 'Helm Diff'}}"
-      # if: ${{ inputs.mode == 'check' }}
+    - name: "Create ${{ inputs.project }} Octopus Release"
+      if: ${{ inputs.mode == 'release' }}
       uses: docker://octopusdeploy/octo
-      env:
-        package-version: ${{ inputs.mode == 'release' && "--packageVersion inputs.release-number" || "" }}
-        channel: ${{ inputs.mode == 'release' && "--channel Default" || "" }}
-        package: ${{ inputs.mode == 'check' && '--package "*:*:inputs.release-number"' || "" }}
-        deploy-to: ${{ inputs.mode == 'check' && "--deployTo inputs.env" || "" }}
-        wait-for-deployment: ${{ inputs.mode == 'check' && "--waitForDeployment" || "" }}
-        cancel-on-timeout: ${{ inputs.mode == 'check' && "--cancelOnTimeout" || "" }}
-        deployment-timeout: ${{ inputs.mode == 'check' && '--deploymentTimeout "00:20:00"' || "" }}
-        progress: ${{ inputs.mode == 'check' && "--progress" || "" }}
+      with:
+        args: >
+          create-release
+          --server ${{ inputs.octopus-server }}
+          --project "${{ inputs.project }}"
+          --apikey ${{ inputs.octopus-api-key }}
+          --version ${{ inputs.release-number }}
+          --releaseNoteFile releasenotes.txt
+          --packageVersion ${{ inputs.release-number }}
+          --channel Default
+
+    - name: "Create ${{ inputs.project }} Octopus Helm Diff"
+      if: ${{ inputs.mode == 'check' }}
+      uses: docker://octopusdeploy/octo
       with:
         args: >
           create-release
@@ -82,19 +72,10 @@ runs:
           --apikey ${{ inputs.octopus-api-key }}
           --version "${{ inputs.release-number }}"
           --releaseNoteFile releasenotes.txt
-          ${{ package-version }}
-          ${{ channel }}
-          ${{ package }}
-          ${{ deploy-to }}
-          ${{ wait-for-deployment }}
-          ${{ cancel-on-timeout }}
-          ${{ deployment-timeout }}
-          ${{ progress }}
-
-# --package "*:*:${{ inputs.release-number }}"
-# --deployTo "${{ inputs.env }}"
-# --waitForDeployment
-# --cancelOnTimeout
-# --deploymentTimeout "00:20:00"
-# --progress
-# ${{ inputs.additional_params_values }}
+          --package "*:*:${{ inputs.release-number }}"
+          --deployTo "${{ inputs.env }}"
+          --waitForDeployment
+          --cancelOnTimeout
+          --deploymentTimeout "00:20:00"
+          --progress
+          ${{ inputs.additional_params_values }}
