@@ -43,7 +43,6 @@ runs:
         files: "${{ github.workspace }}/releasenotes.txt"
 
     - name: Create Release Notes File
-      id: release-notes
       if: steps.check_files.outputs.files_exists != 'true'
       run: |
         $global:github_repository="${{ github.repository }}"
@@ -55,8 +54,14 @@ runs:
       shell: pwsh
 
     - name : debug
-      run: ls -la
+      run: ls -la ${{ env.BASE_DIR }}
       shell: bash
+
+    - name: Read file contents
+      id: read_file
+      uses: andstor/file-reader-action@v1
+      with:
+        path: "${{ github.workspace }}/releasenotes.txt"
 
     - name: "Create ${{ inputs.project }} Octopus Release"
       if: ${{ inputs.mode == 'release' }}
@@ -70,7 +75,7 @@ runs:
           --packageVersion ${{ inputs.release-number }}
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
-          --releasenotes "${{ steps.release-notes.outputs.RELEASE_NOTES }}"
+          --releasenotes "${ steps.read_file.outputs.contents }"
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -87,6 +92,6 @@ runs:
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
-          --releasenotes "${{ steps.release-notes.outputs.RELEASE_NOTES }}"  
+          --releasenotes "${ steps.read_file.outputs.contents }"  
           --progress
           ${{ inputs.additional_params_values }}

@@ -92,4 +92,4 @@ else {
 }
 
 New-Item $github_workspace/releasenotes.txt -type file -force -value $releaseNotes
-::set-output name=RELEASE_NOTES::$releaseNotes.Replace($nl, '\n')
+# ::set-output name=RELEASE_NOTES::$releaseNotes.Replace($nl, '\n')
