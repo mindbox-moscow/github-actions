@@ -20,8 +20,8 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - uses: actions/download-artifact@master
-      continue-on-error: true
+    - continue-on-error: true
+      uses: actions/download-artifact@master
       with:
         name: release-notes-artifact
 
