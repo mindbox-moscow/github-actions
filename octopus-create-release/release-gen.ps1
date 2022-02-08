@@ -92,4 +92,3 @@ else {
 }
 
 New-Item releasenotes.txt -type file -force -value $releaseNotes
-# ::set-output name=RELEASE_NOTES::$releaseNotes.Replace($nl, '\n')

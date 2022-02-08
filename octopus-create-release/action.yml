@@ -52,10 +52,6 @@ runs:
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
 
-    - name : debug
-      run: ls -la ${{ env.BASE_DIR }}
-      shell: bash
-
     - name: Read file contents
       id: read_file
       uses: andstor/file-reader-action@v1
@@ -75,7 +71,6 @@ runs:
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
           --releaseNoteFile releasenotes.txt
-#--releasenotes "${ steps.read_file.outputs.contents }"
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -95,4 +90,3 @@ runs:
           --releaseNoteFile releasenotes.txt
           --progress
           ${{ inputs.additional_params_values }}
-#--releasenotes "${ steps.read_file.outputs.contents }"  
