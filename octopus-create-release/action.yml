@@ -21,6 +21,7 @@ runs:
   using: "composite"
   steps:
     - uses: actions/download-artifact@master
+      if: always()
       with:
         name: release-notes-artifact
 
@@ -31,7 +32,7 @@ runs:
         files: "releasenotes.txt"
 
     - name: Create Release Notes File
-      if: steps.check_files.outputs.files_exists != 'true' && always()
+      if: steps.check_files.outputs.files_exists != 'true'
       uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release-octopus
       with:
         release-number: "${{ inputs.release-number }}"
