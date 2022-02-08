@@ -43,14 +43,9 @@ runs:
 
     - name: Create Release Notes File
       if: steps.check_files.outputs.files_exists != 'true'
-      run: |
-        $global:github_repository="${{ github.repository }}"
-        $global:github_token="${{ github.token }}"
-        $global:current_commitId="${{ github.sha }}"
-        $global:release_version="${{ inputs.release-number }}"
-        $global:github_workspace="${{ github.workspace }}"
-        ${{ github.action_path }}/release-gen.ps1
-      shell: pwsh
+      uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release-octopus
+      with:
+        release-number: "${{ inputs.release-number }}"
 
     - name: Read file contents
       id: read_file
