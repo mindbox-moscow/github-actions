@@ -66,10 +66,10 @@ runs:
       # if: ${{ inputs.mode == 'check' }}
       uses: docker://octopusdeploy/octo
       env:
-        package-version: ${{ inputs.mode == 'release' && "--packageVersion ${{ inputs.release-number }}" || "" }}
+        package-version: ${{ inputs.mode == 'release' && "--packageVersion inputs.release-number" || "" }}
         channel: ${{ inputs.mode == 'release' && "--channel Default" || "" }}
-        package: ${{ inputs.mode == 'check' && '--package "*:*:${{ inputs.release-number }}"' || "" }}
-        deploy-to: ${{ inputs.mode == 'check' && "--deployTo ${{ inputs.env }}" || "" }}
+        package: ${{ inputs.mode == 'check' && '--package "*:*:inputs.release-number"' || "" }}
+        deploy-to: ${{ inputs.mode == 'check' && "--deployTo inputs.env" || "" }}
         wait-for-deployment: ${{ inputs.mode == 'check' && "--waitForDeployment" || "" }}
         cancel-on-timeout: ${{ inputs.mode == 'check' && "--cancelOnTimeout" || "" }}
         deployment-timeout: ${{ inputs.mode == 'check' && '--deploymentTimeout "00:20:00"' || "" }}
