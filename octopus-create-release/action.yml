@@ -1,28 +1,17 @@
 name: 'Create Octopus Release'
 description: 'Create Release for Octopus'
 inputs:
-  mode:
-    description: 'Mode: check/release'
-    required: false
-    default: 'release'
-  space:
-    description: 'Space in Octopus'
-    required: false
-    default: 'Spaces-1'
   project:
     description: 'Project'
     required: true
-  env:
-    description: 'Project Env'
-    required: false
   release-number:
     description: 'Release Number from GitHub'
     required: true
   octopus-server:
-    description: 'Octopus Server Url'
+    description: 'Octopus Server Url. Better use secrets.OCTOPUS_SERVER, if exist'
     required: true
   octopus-api-key:
-    description: 'Octopus Api Key'
+    description: 'Octopus Api Key. Better use secrets.OCTOPUS_API_KEY, if exist'
     required: true
   additional_params_values:
     description: 'Additional Parameters and Values for Creating Release'
@@ -48,21 +37,6 @@ runs:
         release-number: "${{ inputs.release-number }}"
 
     - name: "Create ${{ inputs.project }} Octopus Release"
-      if: ${{ inputs.mode == 'release' }}
-      uses: docker://octopusdeploy/octo
-      with:
-        args: >
-          create-release
-          --server ${{ inputs.octopus-server }}
-          --project "${{ inputs.project }}"
-          --apikey ${{ inputs.octopus-api-key }}
-          --version ${{ inputs.release-number }}
-          --releaseNoteFile releasenotes.txt
-          --packageVersion ${{ inputs.release-number }}
-          --channel Default
-
-    - name: "Create ${{ inputs.project }} Octopus Helm Diff"
-      if: ${{ inputs.mode == 'check' }}
       uses: docker://octopusdeploy/octo
       with:
         args: >
@@ -72,10 +46,4 @@ runs:
           --apikey ${{ inputs.octopus-api-key }}
           --version "${{ inputs.release-number }}"
           --releaseNoteFile releasenotes.txt
-          --package "*:*:${{ inputs.release-number }}"
-          --deployTo "${{ inputs.env }}"
-          --waitForDeployment
-          --cancelOnTimeout
-          --deploymentTimeout "00:20:00"
-          --progress
           ${{ inputs.additional_params_values }}
