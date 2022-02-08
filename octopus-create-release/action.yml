@@ -75,8 +75,7 @@ runs:
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
           --releaseNoteFile releasenotes.txt
-#          --releasenotes "${ steps.read_file.outputs.contents }"
-#releaseNoteFile
+#--releasenotes "${ steps.read_file.outputs.contents }"
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -94,6 +93,6 @@ runs:
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
           --releaseNoteFile releasenotes.txt
-#          --releasenotes "${ steps.read_file.outputs.contents }"  
           --progress
           ${{ inputs.additional_params_values }}
+#--releasenotes "${ steps.read_file.outputs.contents }"  
