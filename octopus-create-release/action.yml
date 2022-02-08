@@ -21,11 +21,11 @@ runs:
   using: "composite"
   steps:
     - uses: actions/download-artifact@master
+      continue-on-error: true
       with:
         name: release-notes-artifact
 
     - name: "Check release notes existence"
-      if: always()
       id: check_files
       uses: andstor/file-existence-action@v1
       with:
