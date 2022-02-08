@@ -91,5 +91,5 @@ else {
     $releaseNotes = $releaseNotes + "There are no new items for this release.$nl"
 }
 
-New-Item $github_workspace/releasenotes.txt -type file -force -value $releaseNotes
+New-Item releasenotes.txt -type file -force -value $releaseNotes
 # ::set-output name=RELEASE_NOTES::$releaseNotes.Replace($nl, '\n')

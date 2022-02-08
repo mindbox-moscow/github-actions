@@ -34,13 +34,12 @@ runs:
     - uses: actions/download-artifact@master
       with:
         name: release-notes-artifact
-        path: ${{ github.workspace }}/releasenotes.txt
 
     - name: "Check release notes existence"
       id: check_files
       uses: andstor/file-existence-action@v1
       with:
-        files: "${{ github.workspace }}/releasenotes.txt"
+        files: "releasenotes.txt"
 
     - name: Create Release Notes File
       if: steps.check_files.outputs.files_exists != 'true'
@@ -61,7 +60,7 @@ runs:
       id: read_file
       uses: andstor/file-reader-action@v1
       with:
-        path: "${{ github.workspace }}/releasenotes.txt"
+        path: "releasenotes.txt"
 
     - name: "Create ${{ inputs.project }} Octopus Release"
       if: ${{ inputs.mode == 'release' }}
@@ -75,7 +74,9 @@ runs:
           --packageVersion ${{ inputs.release-number }}
           --channel Default
           --apikey ${{ inputs.octopus-api-key }}
-          --releasenotes "${ steps.read_file.outputs.contents }"
+          --releaseNoteFile releasenotes.txt
+#          --releasenotes "${ steps.read_file.outputs.contents }"
+#releaseNoteFile
 
     - name: "Create ${{ inputs.project }} Octopus Helm Diff"
       if: ${{ inputs.mode == 'check' }}
@@ -92,6 +93,7 @@ runs:
           --version "${{ inputs.release-number }}"
           --cancelOnTimeout
           --deploymentTimeout "00:20:00"
-          --releasenotes "${ steps.read_file.outputs.contents }"  
+          --releaseNoteFile releasenotes.txt
+#          --releasenotes "${ steps.read_file.outputs.contents }"  
           --progress
           ${{ inputs.additional_params_values }}

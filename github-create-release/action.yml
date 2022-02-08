@@ -35,12 +35,6 @@ runs:
         ${{ github.action_path }}/release-gen.ps1
       shell: pwsh
 
-    - name: Create Artifact Release Notes
-      uses: actions/upload-artifact@master
-      with:
-        name: release-notes-artifact
-        path: ${{ github.workspace }}/releasenotes.txt
-
     - name: "Create GitHub Release"
       id: create_release
       uses: actions/create-release@master
@@ -52,3 +46,9 @@ runs:
         body_path: ${{ github.workspace }}/releasenotes.txt
         draft: false
         prerelease: ${{ inputs.prerelease }}
+
+    - name: Create Artifact Release Notes
+      uses: actions/upload-artifact@master
+      with:
+        name: release-notes-artifact
+        path: ${{ github.workspace }}/releasenotes.txt

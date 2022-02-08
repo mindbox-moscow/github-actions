@@ -92,5 +92,6 @@ else {
 }
 
 New-Item $github_workspace/releasenotes.txt -type file -force -value $releaseNotes
+# ICACLS "$github_workspace/releasenotes.txt" /grant:r "users:(R)" /C
 #Write-Output "::set-env name=RELEASE_NOTES::$releaseNotes.Replace($nl, '\n')"
 # echo "::set-output name=RELEASE_NOTES::$releaseNotes.Replace($nl, '\n')"
