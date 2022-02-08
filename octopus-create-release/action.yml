@@ -20,10 +20,12 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - continue-on-error: true
+    - name: download release notes
+      if: always()
       uses: actions/download-artifact@master
       with:
         name: release-notes-artifact
+      continue-on-error: true
 
     - name: "Check release notes existence"
       id: check_files
