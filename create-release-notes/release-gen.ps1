@@ -41,10 +41,12 @@ $github = New-Module -ScriptBlock {
 # Get all \ts from latest deployment to this commit
 # ---------------------------------------------------------
 
-Write-Host ("Getting all commits from git tag v" + $last_release_version + " to commit sha $current_commitId.")
 
 $response_last_release_version = $github.GetLastReleaseVersion()
 $last_release_version = $response_last_release_version.tag_name
+
+Write-Host ("Getting all commits from git tag v" + $last_release_version + " to commit sha $current_commitId.")
+
 
 $response_commits = $github.GetCommits($last_release_version, $current_commitId)
 $commits = $response_commits.commits | Sort-Object -Property @{Expression={$_.commit.author.date}; Ascending=$false} -Descending
