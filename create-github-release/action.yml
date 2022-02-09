@@ -23,7 +23,7 @@ runs:
 
     - name: Create Release Notes File
       if: ${{ steps.checkTag.outputs.exists == 'false' }}
-      uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
+      uses: mindbox-moscow/github-actions/create-release-notes@master
       with:
         release-number: "${{ inputs.release-number }}"
 
