@@ -21,6 +21,9 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
+    - name: ECHOOOOO
+      run: echo ${{ steps.checkTag.outputs.exists }}
+
     - name: Create Release Notes File
       uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
       with:
