@@ -33,7 +33,6 @@ runs:
     - name: "Create GitHub Release"
       id: create_release
       uses: actions/create-release@master
-      continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
