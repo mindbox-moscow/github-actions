@@ -30,9 +30,9 @@ runs:
       run: echo ecchhoo2 FAAAAAALLLSSEEE
       shell: bash
 
-    - name: ECHOOOOO1
+    - name: ECHOOOOO1_1
       if: ${{ steps.checkTag.outputs.exists == 'false' }}
-      run: echo ecchhoo2 FAAAAAALLLSSEEE
+      run: echo ecchhoo2_1 FAAAAAALLLSSEEE
       shell: bash
 
     - name: ECHOOOOO2
