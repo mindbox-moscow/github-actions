@@ -36,7 +36,7 @@ runs:
         name: release-notes-artifact
 
     - name: "Create GitHub Release"
-      # if: ${{ !steps.checkTag.outputs.exists }}
+      if: ${{ steps.checkTag.outputs.exists == false }}
       id: create_release
       uses: actions/create-release@master
       env:
