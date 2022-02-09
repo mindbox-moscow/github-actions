@@ -25,34 +25,17 @@ runs:
   steps:
     - name: "Checkout"
       uses: actions/checkout@master
-
-    - name: generate release number
-      if: ${{ !inputs.prerelease }}
-      id: release-number
-      uses: mindbox-moscow/gha-release-number@v1.0.1
+    
+    - name: "Create Github Release"
+      uses: mindbox-moscow/github-actions/create-github-release@lysychenko/create-release
+      continue-on-error: true
       with:
-        token: ${{ github.token }}
-
-    - name: Create Release Notes File
-      uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
-      with:
-        release-number: "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
+        release-number: ${{ inputs.release-number }}
+        prerelease: ${{ inputs.prerelease }}
 
     - uses: actions/download-artifact@master
       with:
         name: release-notes-artifact
-
-    - name: "Create GitHub Release"
-      id: create_release
-      uses: actions/create-release@master
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      with:
-        tag_name: ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}
-        release_name: "Release ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
-        body_path: releasenotes.txt
-        draft: false
-        prerelease: ${{ inputs.prerelease }}
 
     - name: "Create ${{ inputs.project }} Octopus Release"
       uses: docker://octopusdeploy/octo
