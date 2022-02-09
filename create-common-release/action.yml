@@ -26,6 +26,13 @@ runs:
     - name: "Checkout"
       uses: actions/checkout@master
     
+
+    - name: check rate limit api github
+      id: rate-limit
+      run: >
+        curl -i -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ github.token }}" https://api.github.com/rate_limit
+      shell: bash
+
     - name: generate release number
       if: ${{ !inputs.prerelease }}
       id: release-number
