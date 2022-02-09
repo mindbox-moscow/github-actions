@@ -1,0 +1,46 @@
+name: 'Create Release'
+description: 'Create Release'
+inputs:
+  release-number:
+    description: 'Release number'
+    required: true
+  prerelease:
+    description: 'If prerelease - true, else false'
+    required: false
+    default: false
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout"
+      uses: actions/checkout@master
+    
+    - uses: mukunku/tag-exists-action@v1.0.0
+      id: checkTag
+      with: 
+        tag: "${{ inputs.release-number }}"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Create Release Notes File
+      if: ${{ steps.checkTag.outputs.exists == 'false' }}
+      uses: mindbox-moscow/github-actions/create-release-notes@master
+      with:
+        release-number: "${{ inputs.release-number }}"
+
+    - uses: actions/download-artifact@master
+      if: ${{ steps.checkTag.outputs.exists == 'false' }}
+      with:
+        name: release-notes-artifact
+
+    - name: "Create GitHub Release"
+      if: ${{ steps.checkTag.outputs.exists == 'false' }}
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag_name: ${{ inputs.release-number }}
+        release_name: "Release ${{ inputs.release-number }}"
+        body_path: releasenotes.txt
+        draft: false
+        prerelease: ${{ inputs.prerelease }}
