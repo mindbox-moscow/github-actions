@@ -1,0 +1,51 @@
+name: 'Create Octopus Release'
+description: 'Create Release for Octopus'
+inputs:
+  project:
+    description: 'Project'
+    required: true
+  release-number:
+    description: 'Release Number from GitHub'
+    required: true
+  octopus-server:
+    description: 'Octopus Server Url. Better use secrets.OCTOPUS_SERVER, if exist'
+    required: true
+  octopus-api-key:
+    description: 'Octopus Api Key. Better use secrets.OCTOPUS_API_KEY, if exist'
+    required: true
+  additional_params_values:
+    description: 'Additional Parameters and Values for Creating Release'
+    required: false
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: download release notes
+      uses: actions/download-artifact@master
+      with:
+        name: release-notes-artifact
+      # continue-on-error: true
+
+    - name: "Check release notes existence"
+      id: check_files
+      uses: andstor/file-existence-action@v1
+      with:
+        files: "releasenotes.txt"
+
+    - name: Create Release Notes File
+      if: steps.check_files.outputs.files_exists != 'true'
+      uses: mindbox-moscow/github-actions/create-release-notes@master
+      with:
+        release-number: "${{ inputs.release-number }}"
+
+    - name: "Create ${{ inputs.project }} Octopus Release"
+      uses: docker://octopusdeploy/octo
+      with:
+        args: >
+          create-release
+          --server ${{ inputs.octopus-server }}
+          --project "${{ inputs.project }}"
+          --apikey ${{ inputs.octopus-api-key }}
+          --version "${{ inputs.release-number }}"
+          --releaseNoteFile releasenotes.txt
+          ${{ inputs.additional_params_values }}

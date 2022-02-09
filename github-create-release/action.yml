@@ -1,0 +1,47 @@
+name: 'Create GitHub Release'
+description: 'Create Release for GitHub'
+inputs:
+  release-number:
+    description: 'Release number'
+    required: false
+  prerelease:
+    description: 'If prerelease - true, else release - false'
+    required: false
+    default: false
+outputs: 
+  release-number:
+    description: 'Created Release Number'
+    value: ${{ steps.create_release.outputs.release-number }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout"
+      uses: actions/checkout@master
+
+    - name: generate release number
+      if: ${{ !inputs.prerelease }}
+      id: release-number
+      uses: mindbox-moscow/gha-release-number@v1.0.1
+      with:
+        token: ${{ github.token }}
+
+    - name: Create Release Notes File
+      uses: mindbox-moscow/github-actions/create-release-notes@master
+      with:
+        release-number: "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
+
+    - uses: actions/download-artifact@master
+      with:
+        name: release-notes-artifact
+
+    - name: "Create GitHub Release"
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag_name: ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}
+        release_name: "Release ${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
+        body_path: releasenotes.txt
+        draft: false
+        prerelease: ${{ inputs.prerelease }}
