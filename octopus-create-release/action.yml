@@ -34,7 +34,7 @@ runs:
 
     - name: Create Release Notes File
       if: steps.check_files.outputs.files_exists != 'true'
-      uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release-octopus
+      uses: mindbox-moscow/github-actions/create-release-notes@master
       with:
         release-number: "${{ inputs.release-number }}"
 
