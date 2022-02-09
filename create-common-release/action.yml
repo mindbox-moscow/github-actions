@@ -33,6 +33,11 @@ runs:
       with:
         token: ${{ github.token }}
 
+    - name: sleep
+      if: ${{ strategy.job-index != 0 }}
+      run: sleep 10s
+      shell: bash
+
     - name: "Create Github Release"
       uses: mindbox-moscow/github-actions/create-github-release@master
       with:
