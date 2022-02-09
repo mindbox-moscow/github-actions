@@ -35,7 +35,7 @@ runs:
 
     - name: sleep
       if: ${{ strategy.job-index != 0 }}
-      run: sleep 2s
+      run: sleep 10s
       shell: bash
 
     - name: "Create Github Release"
