@@ -30,7 +30,6 @@ runs:
 
     - name: Create Release Notes File
       uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
-      if: ${{ !steps.checkTag.outputs.exists }}
       with:
         release-number: "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
 
