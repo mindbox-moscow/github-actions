@@ -25,13 +25,6 @@ runs:
   steps:
     - name: "Checkout"
       uses: actions/checkout@master
-    
-
-    - name: check rate limit api github
-      id: rate-limit
-      run: >
-        curl -i -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ github.token }}" https://api.github.com/rate_limit
-      shell: bash
 
     - name: generate release number
       if: ${{ !inputs.prerelease }}
@@ -58,7 +51,8 @@ runs:
           --server ${{ inputs.octopus-server }}
           --project "${{ inputs.project }}"
           --apikey ${{ inputs.octopus-api-key }}
-          --version "${{ inputs.release-number }}"
+          --version "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
+          --packageVersion "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
           --releaseNoteFile releasenotes.txt
           ${{ inputs.additional_params_values }}
 

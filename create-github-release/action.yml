@@ -5,7 +5,7 @@ inputs:
     description: 'Release number'
     required: true
   prerelease:
-    description: 'If prerelease - true, else release - false'
+    description: 'If prerelease - true, else false'
     required: false
     default: false
 runs:
