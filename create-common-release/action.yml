@@ -28,7 +28,6 @@ runs:
     
     - name: "Create Github Release"
       uses: mindbox-moscow/github-actions/create-github-release@lysychenko/create-release
-      continue-on-error: true
       with:
         release-number: ${{ inputs.release-number }}
         prerelease: ${{ inputs.prerelease }}
