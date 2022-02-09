@@ -40,6 +40,8 @@ runs:
 
     - name: Set env release number
       run: echo "RELEASE_NUMBER=${{ steps.release-number.outputs.release-number }}" >> $GITHUB_ENV
+      shell: bash
+
 
     # - name: sleep
     #   if: ${{ strategy.job-index != '0' }}
