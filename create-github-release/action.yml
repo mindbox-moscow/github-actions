@@ -22,17 +22,22 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: ECHOOOOO
-      run: echo ${{ steps.checkTag.outputs.exists }}
+      run: echo ecchhoo1 ${{ steps.checkTag.outputs.exists }}
       shell: bash
 
     - name: ECHOOOOO1
       if: ${{ steps.checkTag.outputs.exists == false }}
-      run: echo FAAAAAALLLSSEEE
+      run: echo ecchhoo2 FAAAAAALLLSSEEE
       shell: bash
 
     - name: ECHOOOOO2
       if: ${{ steps.checkTag.outputs.exists == true }}
-      run: echo TRUUUUEEEE
+      run: echo ecchhoo3 TRUUUUEEEE
+      shell: bash
+
+    - name: ECHOOOOO3
+      if: ${{ !steps.checkTag.outputs.exists }}
+      run: echo ecchhoo4 FAAAAAALLLSSEEE
       shell: bash
 
     - name: Create Release Notes File
