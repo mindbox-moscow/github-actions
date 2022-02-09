@@ -26,12 +26,25 @@ runs:
     - name: "Checkout"
       uses: actions/checkout@master
 
+    - name: test env
+      if: ${{ !env.RELEASE_NUMBER }}
+      run: echo EEEAAH
+      shell: bash
+
     - name: generate release number
       if: ${{ inputs.prerelease == 'false' }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
         token: ${{ github.token }}
+
+    - name: Set env release number
+      run: echo "RELEASE_NUMBER=${{ steps.release-number.outputs.release-number }}" >> $GITHUB_ENV
+
+    # - name: sleep
+    #   if: ${{ strategy.job-index != '0' }}
+    #   run: sleep 2s
+    #   shell: bash
 
     - name: "Create Github Release"
       uses: mindbox-moscow/github-actions/create-github-release@master
