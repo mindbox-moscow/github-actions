@@ -26,22 +26,12 @@ runs:
     - name: "Checkout"
       uses: actions/checkout@master
 
-    - name: test env
-      run: echo EEEAAH -${{ strategy.job-index }}-
-      shell: bash
-
     - name: generate release number
       if: ${{ inputs.prerelease == 'false' }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
         token: ${{ github.token }}
-
-
-    - name: sleep
-      if: ${{ strategy.job-index != '0' }}
-      run: sleep 2s
-      shell: bash
 
     - name: sleep
       if: ${{ strategy.job-index != 0 }}
