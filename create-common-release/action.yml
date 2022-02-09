@@ -27,7 +27,7 @@ runs:
       uses: actions/checkout@master
     
     - name: generate release number
-      # if: ${{ !inputs.prerelease }}
+      if: ${{ !inputs.prerelease }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
@@ -43,16 +43,16 @@ runs:
       with:
         name: release-notes-artifact
 
-    # - name: "Create ${{ inputs.project }} Octopus Release"
-    #   uses: docker://octopusdeploy/octo
-    #   with:
-    #     args: >
-    #       create-release
-    #       --server ${{ inputs.octopus-server }}
-    #       --project "${{ inputs.project }}"
-    #       --apikey ${{ inputs.octopus-api-key }}
-    #       --version "${{ inputs.release-number }}"
-    #       --releaseNoteFile releasenotes.txt
-    #       ${{ inputs.additional_params_values }}
+    - name: "Create ${{ inputs.project }} Octopus Release"
+      uses: docker://octopusdeploy/octo
+      with:
+        args: >
+          create-release
+          --server ${{ inputs.octopus-server }}
+          --project "${{ inputs.project }}"
+          --apikey ${{ inputs.octopus-api-key }}
+          --version "${{ inputs.release-number }}"
+          --releaseNoteFile releasenotes.txt
+          ${{ inputs.additional_params_values }}
 
     

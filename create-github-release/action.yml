@@ -31,15 +31,15 @@ runs:
       with:
         name: release-notes-artifact
 
-    # - name: "Create GitHub Release"
-    #   if: ${{ !steps.checkTag.outputs.exists }}
-    #   id: create_release
-    #   uses: actions/create-release@master
-    #   env:
-    #     GITHUB_TOKEN: ${{ github.token }}
-    #   with:
-    #     tag_name: ${{ inputs.release-number }}
-    #     release_name: "Release ${{ inputs.release-number }}"
-    #     body_path: releasenotes.txt
-    #     draft: false
-    #     prerelease: ${{ inputs.prerelease }}
+    - name: "Create GitHub Release"
+      if: ${{ !steps.checkTag.outputs.exists }}
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag_name: ${{ inputs.release-number }}
+        release_name: "Release ${{ inputs.release-number }}"
+        body_path: releasenotes.txt
+        draft: false
+        prerelease: ${{ inputs.prerelease }}
