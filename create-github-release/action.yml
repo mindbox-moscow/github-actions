@@ -20,17 +20,27 @@ runs:
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
         token: ${{ github.token }}
+    
+    - uses: mukunku/tag-exists-action@v1.0.0
+      id: checkTag
+      with: 
+        tag: "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create Release Notes File
       uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
+      if: ${{ !steps.checkTag.outputs.exists }}
       with:
         release-number: "${{ inputs.prerelease && inputs.release-number || steps.release-number.outputs.release-number }}"
 
     - uses: actions/download-artifact@master
+      if: ${{ !steps.checkTag.outputs.exists }}
       with:
         name: release-notes-artifact
 
     - name: "Create GitHub Release"
+      if: ${{ !steps.checkTag.outputs.exists }}
       id: create_release
       uses: actions/create-release@master
       env:
