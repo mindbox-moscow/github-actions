@@ -23,6 +23,7 @@ runs:
 
     - name: ECHOOOOO
       run: echo ${{ steps.checkTag.outputs.exists }}
+      shell: bash
 
     - name: Create Release Notes File
       uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
