@@ -28,7 +28,7 @@ runs:
 
     - name: test env
       if: ${{ !env.RELEASE_NUMBER }}
-      run: echo EEEAAH
+      run: echo EEEAAH -${{ env.RELEASE_NUMBER }}-
       shell: bash
 
     - name: generate release number
