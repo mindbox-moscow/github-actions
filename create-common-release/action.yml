@@ -43,16 +43,16 @@ runs:
       with:
         name: release-notes-artifact
 
-    # - name: "Create ${{ inputs.project }} Octopus Release"
-    #   uses: docker://octopusdeploy/octo
-    #   with:
-    #     args: >
-    #       create-release
-    #       --server ${{ inputs.octopus-server }}
-    #       --project "${{ inputs.project }}"
-    #       --apikey ${{ inputs.octopus-api-key }}
-    #       --version "${{ inputs.release-number }}"
-    #       --releaseNoteFile releasenotes.txt
-    #       ${{ inputs.additional_params_values }}
+    - name: "Create ${{ inputs.project }} Octopus Release"
+      uses: docker://octopusdeploy/octo
+      with:
+        args: >
+          create-release
+          --server ${{ inputs.octopus-server }}
+          --project "${{ inputs.project }}"
+          --apikey ${{ inputs.octopus-api-key }}
+          --version "${{ inputs.release-number }}"
+          --releaseNoteFile releasenotes.txt
+          ${{ inputs.additional_params_values }}
 
     
