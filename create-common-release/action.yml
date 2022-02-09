@@ -27,7 +27,7 @@ runs:
       uses: actions/checkout@master
 
     - name: generate release number
-      if: ${{ !inputs.prerelease }}
+      if: ${{ inputs.prerelease == 'false' }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
