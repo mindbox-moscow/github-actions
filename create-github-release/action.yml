@@ -25,13 +25,23 @@ runs:
       run: echo ${{ steps.checkTag.outputs.exists }}
       shell: bash
 
+    - name: ECHOOOOO
+      if: ${{ steps.checkTag.outputs.exists == false }}
+      run: echo FAAAAAALLLSSEEE
+      shell: bash
+
+    - name: ECHOOOOO
+      if: ${{ steps.checkTag.outputs.exists == true }}
+      run: echo TRUUUUEEEE
+      shell: bash
+
     - name: Create Release Notes File
       uses: mindbox-moscow/github-actions/create-release-notes@lysychenko/create-release
       with:
         release-number: "${{ inputs.release-number }}"
 
     - uses: actions/download-artifact@master
-      if: ${{ !steps.checkTag.outputs.exists }}
+      if: ${{ steps.checkTag.outputs.exists == false }}
       with:
         name: release-notes-artifact
 
