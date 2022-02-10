@@ -12,7 +12,7 @@ inputs:
 outputs:
   release-number: 
     description: "Release number"
-    value: ${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}
+    value: ${{ steps.release-number.outputs.release-number }}
   release-notes-body: 
     description: "Body for Release Notes"
     value: "${{ steps.changelog.outputs.changelog }}"
