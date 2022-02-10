@@ -10,9 +10,15 @@ inputs:
     required: false
     default: false
 outputs:
-  release-number: "${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}"
-  release-notes-body: "${{ steps.changelog.outputs.changelog }}"
-  release-url: ${{ steps.create_release.outputs.html_url}}
+  release-number: 
+    description: "Release number"
+    value: "${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}"
+  release-notes-body: 
+    description: "Body for Release Notes"
+    value: "${{ steps.changelog.outputs.changelog }}"
+  release-url:
+    description: "GitHub Release URL"
+    value: ${{ steps.create_release.outputs.html_url}}
 runs:
   using: "composite"
   steps:
