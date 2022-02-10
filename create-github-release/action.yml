@@ -4,7 +4,6 @@ inputs:
   release-number:
     description: 'Release number'
     required: true
-    default: ""
   prerelease:
     description: 'If prerelease - true, else false'
     required: false
@@ -26,7 +25,7 @@ runs:
       uses: actions/checkout@master
 
     - name: generate release number
-      if: ${{ inputs.release-number == "" }}
+      if: ${{ !inputs.release-number }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
