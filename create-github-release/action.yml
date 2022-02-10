@@ -4,7 +4,7 @@ inputs:
   release-number:
     description: 'Release number'
     required: true
-    default: ""
+    default: 'empty'
   prerelease:
     description: 'If prerelease - true, else false'
     required: false
@@ -12,21 +12,21 @@ inputs:
 outputs:
   release-number: 
     description: "Release number"
-    value: "${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}"
+    value: ${{ inputs.release-number != 'empty' && inputs.release-number || steps.release-number.outputs.release-number }}
   release-notes-body: 
     description: "Body for Release Notes"
-    value: "${{ steps.changelog.outputs.changelog }}"
+    value: "[View release in GitHub](${{ steps.create_release.outputs.html_url }}) <br /> ${{ steps.changelog.outputs.changelog }}"
   release-url:
     description: "GitHub Release URL"
-    value: ${{ steps.create_release.outputs.html_url}}
+    value: ${{ steps.create_release.outputs.html_url }}
 runs:
   using: "composite"
   steps:
     - name: "Checkout"
       uses: actions/checkout@master
-      
+
     - name: generate release number
-      if: ${{ inputs.release-number == "" }}
+      if: ${{ inputs.release-number == 'empty' }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
@@ -44,8 +44,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
-        tag_name: "${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}"
-        release_name: "Release ${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}"
+        tag_name: "${{ inputs.release-number != 'empty' && inputs.release-number || steps.release-number.outputs.release-number }}"
+        release_name: "Release ${{ inputs.release-number != 'empty' && inputs.release-number || steps.release-number.outputs.release-number }}"
         body: |
           ${{ steps.changelog.outputs.changelog }}
         draft: false
