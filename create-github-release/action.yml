@@ -4,6 +4,7 @@ inputs:
   release-number:
     description: 'Release number'
     required: true
+    default: empty
   prerelease:
     description: 'If prerelease - true, else false'
     required: false
@@ -11,7 +12,7 @@ inputs:
 outputs:
   release-number: 
     description: "Release number"
-    value: ${{ steps.release-number.outputs.release-number }}
+    value: ${{ inputs.release-number != empty && inputs.release-number || steps.release-number.outputs.release-number }}
   release-notes-body: 
     description: "Body for Release Notes"
     value: "${{ steps.changelog.outputs.changelog }}"
@@ -25,7 +26,7 @@ runs:
       uses: actions/checkout@master
 
     - name: generate release number
-      if: ${{ !inputs.release-number }}
+      if: ${{ inputs.release-number == "" }}
       id: release-number
       uses: mindbox-moscow/gha-release-number@v1.0.1
       with:
@@ -43,8 +44,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
-        tag_name: "${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}"
-        release_name: "Release ${{ inputs.release-number != "" && inputs.release-number || steps.release-number.outputs.release-number }}"
+        tag_name: "${{ inputs.release-number != empty && inputs.release-number || steps.release-number.outputs.release-number }}"
+        release_name: "Release ${{ inputs.release-number != empty && inputs.release-number || steps.release-number.outputs.release-number }}"
         body: |
           ${{ steps.changelog.outputs.changelog }}
         draft: false
