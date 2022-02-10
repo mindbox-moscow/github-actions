@@ -43,11 +43,11 @@ runs:
         REPO: ${{ github.repository }}
 
     - name: echo array
-      run: echo ${{ inputs.projects }}
+      run: echo "${{ inputs.projects }}"
       shell: bash
 
     - name: echo changelog
-      run: echo ${{ steps.Changelog.outputs.changelog }}
+      run: echo "${{ steps.Changelog.outputs.changelog }}"
       shell: bash
 
     # - name: "Create GitHub Release"
