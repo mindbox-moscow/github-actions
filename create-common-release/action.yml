@@ -42,13 +42,15 @@ runs:
       env:
         REPO: ${{ github.repository }}
 
+    - name: Install Octopus CLI 🐙
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.6
+      with:
+        version: latest
+
     - name: echo array
-      run: echo "${{ inputs.projects }}"
+      run: test.py "${{ inputs.projects }}"
       shell: bash
 
-    - name: echo changelog
-      run: echo "${{ steps.Changelog.outputs.changelog }}"
-      shell: bash
 
     # - name: "Create GitHub Release"
     #   if: ${{ steps.checkTag.outputs.exists == 'false' }}
