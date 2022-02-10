@@ -1,0 +1,31 @@
+name: 'Create Release Notes'
+description: 'Create Release Notes'
+inputs:
+  release-number:
+    description: 'Release number'
+    required: false
+outputs: 
+  release-number:
+    description: 'Created Release Number'
+    value: ${{ steps.create_release.outputs.release-number }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout"
+      uses: actions/checkout@master
+
+    - name: Create Release Notes File
+      run: |
+        $global:github_repository="${{ github.repository }}"
+        $global:github_token="${{ github.token }}"
+        $global:current_commitId="${{ github.sha }}"
+        $global:release_version="${{ inputs.release-number }}"
+        ${{ github.action_path }}/release-gen.ps1
+      shell: pwsh
+    
+    - name: Create Artifact Release Notes
+      uses: actions/upload-artifact@master
+      with:
+        name: release-notes-artifact
+        path: releasenotes.txt
+    
