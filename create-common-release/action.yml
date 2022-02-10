@@ -48,7 +48,7 @@ runs:
         version: latest
 
     - name: echo array
-      run: python test.py "${{ inputs.projects }}"
+      run: python ${{ github.action_path }}/test.py "${{ inputs.projects }}"
       shell: bash
 
 
