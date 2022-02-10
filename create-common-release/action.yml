@@ -48,7 +48,7 @@ runs:
         version: latest
 
     - name: echo array
-      run: test.py "${{ inputs.projects }}"
+      run: python test.py "${{ inputs.projects }}"
       shell: bash
 
 
