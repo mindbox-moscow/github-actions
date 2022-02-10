@@ -15,7 +15,7 @@ outputs:
     value: ${{ inputs.release-number != 'empty' && inputs.release-number || steps.release-number.outputs.release-number }}
   release-notes-body: 
     description: "Body for Release Notes"
-    value: "[View release in GitHub](${{ steps.create_release.outputs.html_url }}) \ ${{ steps.changelog.outputs.changelog }}"
+    value: "[View release in GitHub](${{ steps.create_release.outputs.html_url }})  ${{ steps.changelog.outputs.changelog }}"
   release-url:
     description: "GitHub Release URL"
     value: ${{ steps.create_release.outputs.html_url }}
