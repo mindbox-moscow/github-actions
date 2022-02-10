@@ -16,11 +16,11 @@ outputs:
   release-notes-body: 
     description: "Body for Release Notes"
     value: |
-      [View release in GitHub](${{ needs.create-gh-release.outputs.release-url }})
+      [View release in GitHub](${{ steps.create_release.outputs.html_url }})
       "${{ steps.changelog.outputs.changelog }}"
   release-url:
     description: "GitHub Release URL"
-    value: ${{ steps.create_release.outputs.html_url}}
+    value: ${{ steps.create_release.outputs.html_url }}
 runs:
   using: "composite"
   steps:
