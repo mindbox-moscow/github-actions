@@ -40,7 +40,7 @@ runs:
 
     - name: clean changelog from quotes
       run: |
-        echo "::set-output name=changelog::$(echo ${{ steps.changelog.outputs.changelog }} | sed "s/\"//g" | sed "s/'//g")"
+        echo "::set-output name=changelog::$(echo '${{ steps.changelog.outputs.changelog }}' | sed "s/\"//g" | sed "s/'//g")"
       id: clean-changelog
       shell: bash
 
