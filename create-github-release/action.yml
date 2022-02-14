@@ -15,7 +15,7 @@ outputs:
     value: ${{ inputs.release-number != 'empty' && inputs.release-number || steps.release-number.outputs.release-number }}
   release-notes-body: 
     description: "Body for Release Notes"
-    value: "[View release in GitHub](${{ steps.create_release.outputs.html_url }}) <br /> ${{ steps.changelog.outputs.changelog }}"
+    value:  '[View release in GitHub](${{ steps.create_release.outputs.html_url }}) <br /> ${{ steps.clean-changelog.outputs.changelog }}'
   release-url:
     description: "GitHub Release URL"
     value: ${{ steps.create_release.outputs.html_url }}
@@ -37,6 +37,11 @@ runs:
       id: changelog
       env:
         REPO: ${{ github.repository }}
+
+    - name: clean changelog from quotes
+      run: |
+        echo "::set-output name=changelog::$(echo ${{ steps.changelog.outputs.changelog }} | sed "s/\"//g" | sed "s/'//g")"
+      id: clean-changelog
 
     - name: "Create GitHub Release"
       id: create_release
