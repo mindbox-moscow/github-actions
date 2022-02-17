@@ -279,6 +279,7 @@ jobs:
         uses: mindbox-moscow/github-actions/create-github-release@master
         with:
           release-number: ${{ steps.release-number.outputs.release-number }}
+          checkout: false
 
       - name: Push package to Octopus repository
         uses: docker://octopusdeploy/octo
