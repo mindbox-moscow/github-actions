@@ -9,6 +9,10 @@ inputs:
     description: 'If prerelease - true, else false'
     required: false
     default: false
+  checkout:
+    description: 'If it need to checkout master'
+    required: false
+    default: 'true'
 outputs:
   release-number: 
     description: "Release number"
@@ -23,6 +27,7 @@ runs:
   using: "composite"
   steps:
     - name: "Checkout"
+      if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@master
 
     - name: generate release number
