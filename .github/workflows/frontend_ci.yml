@@ -276,14 +276,9 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: mindbox-moscow/github-actions/create-github-release@master
         with:
-          tag_name: ${{ steps.release-number.outputs.release-number }}
-          release_name: Release ${{ steps.release-number.outputs.release-number }}
-          draft: false
-          prerelease: false
+          release-number: ${{ steps.release-number.outputs.release-number }}
 
       - name: Push package to Octopus repository
         uses: docker://octopusdeploy/octo
@@ -305,7 +300,7 @@ jobs:
             --channel Default
             --tenant=*
             --apikey ${{ secrets.octopus_api_key }}
-            --releasenotes "[View change log](https://github.com/mindbox-moscow/${{ steps.set_variables.outputs.repository_name }}/releases/tag/${{ steps.release-number.outputs.release-number }})"
+            --releasenotes "${{ steps.create-release.outputs.release-notes-body }}"
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
