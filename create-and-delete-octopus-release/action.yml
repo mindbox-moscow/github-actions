@@ -1,0 +1,65 @@
+name: 'Create and Delete After Octopus Release'
+description: 'Create and Delete After Octopus Release(for creating helm diff)'
+inputs:
+  octopus-server:
+    description: 'Octopus Server URL'
+    required: true
+  octopus-api-key:
+    description: 'Octopus API Key'
+    required: true
+  project:
+    description: 'Octopus Project'
+    required: true
+  release-version:
+    description: 'Release Version'
+    required: true
+  env:
+    description: 'Octopus LifeCycle Name'
+    required: true
+  channel:
+    description: 'Octopus Channel Name'
+    required: true
+  release-notes:
+    description: 'Release Notes for Octopus'
+    required: true
+  additional-skip-params-value:
+    description: 'Additional Parameters with Values for Octopus'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: "Create ${{ inputs.project }} Octopus Helm Diff"
+      uses: docker://octopusdeploy/octo
+      with:
+        args: >
+          create-release
+          --server ${{ inputs.octopus-server }}
+          --project "${{ inputs.project }}"
+          --apikey ${{ inputs.octopus-api-key }}
+          --packageVersion "${{ inputs.release-version }}"
+          --version "${{ inputs.release-version }}"
+          --deployTo "${{ inputs.env }}"
+          --channel "${{ inputs.channel }}"
+          --skip "helmfile apply with crd"
+          --skip "helmfile apply"
+          --skip "confirm helmfile with crd"
+          --skip "confirm helmfile"
+          ${{ inputs.additional-skip-params-value }}
+          --waitForDeployment
+          --cancelOnTimeout
+          --deploymentTimeout "00:20:00"
+          --progress
+          --releasenotes "${{ inputs.release-notes }}"
+
+    - name: "Delete ${{ matrix.project }} Octopus Release"
+      if: always()
+      uses: docker://octopusdeploy/octo
+      with:
+        args: >
+          delete-releases
+          --server ${{ inputs.octopus-server }}
+          --project "${{ inputs.project }}"
+          --apikey ${{ inputs.octopus-api-key }}
+          --maxVersion "${{ inputs.release-version }}"
+          --minVersion "${{ inputs.release-version }}"
