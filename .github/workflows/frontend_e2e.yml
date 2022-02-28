@@ -191,9 +191,11 @@ jobs:
         run: |
           sed -i "s~DOCKER_IMAGE~$DOCKER_IMAGE~g" ./deploy.yml
           sed -i "s~HASH_PAYLOAD~$HASH_PAYLOAD~g" ./deploy.yml
+          sed -i "s~CI_COMMIT_SHA~$CI_COMMIT_SHA~g" ./deploy.yml
         env:
           DOCKER_IMAGE: ${{ env.registry }}/${{ env.image }}/${{ env.ref_name }}:${{ github.sha }}
           HASH_PAYLOAD: ${{ env.hash_payload }}
+          CI_COMMIT_SHA: ${{ github.sha }}
 
       - name: Deploy to cluster
         uses: wahyd4/kubectl-helm-action@master
