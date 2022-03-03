@@ -45,7 +45,7 @@ runs:
 
     - name: clean changelog from quotes
       run: |
-        echo "::set-output name=changelog::$((cat <<EOFGHA
+        echo "::set-output name=changelog::$((cat <<- EOFGHA
         ${{ steps.changelog.outputs.changelog }}
         EOFGHA
         ) | sed "s/\"//g" | sed "s/'//g" | sed -i ':a;N;$!ba;s/\n//g' )"
