@@ -145,6 +145,7 @@ jobs:
 
   release:
     needs: checking
+    concurrency: release
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }}
     timeout-minutes: 15
