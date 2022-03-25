@@ -59,7 +59,7 @@ runs:
 
     - name: "Setup github token for module repo"
       run: |
-        if [[ ${{ inputs.isLegacyProject }} -ne "1" ]]; then
+        if [[ ${{ inputs.isLegacyProject }} -ne "1" ]] && [[ ${{ inputs.isLegacyProject }} -ne "3" ]] ; then
           echo "--- RUN STEP: Setup github token for module repo"
 
           git config --local --remove-section http."https://github.com/"
