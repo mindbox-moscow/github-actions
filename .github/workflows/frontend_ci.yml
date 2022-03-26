@@ -211,14 +211,14 @@ jobs:
           SENTRY_MAIN_ORG: ${{ env.sentry_main_org }}
           SENTRY_MAIN_PROJECT: ${{ inputs.sentry_main_project }}
           SENTRY_MAIN_URL: ${{ env.sentry_main_url }}
-          SENTRY_MAIN_RELEASE: ${{ steps.release-number.outputs.release-number }}(${{ github.sha }})
+          SENTRY_MAIN_RELEASE: ${{ steps.release-number.outputs.release-number }} (${{ github.sha }})
           SENTRY_AUTOBUGS_AUTH_TOKEN: ${{ secrets.sentry_autobugs_auth_token }}
           SENTRY_AUTOBUGS_DSN: ${{ secrets.sentry_autobugs_dsn }}
           SENTRY_AUTOBUGS_ENABLED: ${{ inputs.sentry_autobugs_enabled }}
           SENTRY_AUTOBUGS_ORG: ${{ env.sentry_autobugs_org }}
           SENTRY_AUTOBUGS_PROJECT: ${{ inputs.sentry_autobugs_project }}
           SENTRY_AUTOBUGS_URL: ${{ env.sentry_autobugs_url }}
-          SENTRY_AUTOBUGS_RELEASE: ${{ steps.release-number.outputs.release-number }}(${{ github.sha }})
+          SENTRY_AUTOBUGS_RELEASE: ${{ steps.release-number.outputs.release-number }} (${{ github.sha }})
 
       - name: Copy package.json to build folder
         run: cp ./package.json ./build/
