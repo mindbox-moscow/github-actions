@@ -61,11 +61,18 @@ runs:
       working-directory: ${{ inputs.workingDir }}
       shell: bash
 
+    # - name: "Terraform Validate"
+    #   id: validate
+    #   run: terraform validate -no-color
+    #   working-directory: ${{ inputs.workingDir }}
+    #   shell: bash
+
     - name: "Terraform Validate"
-      id: validate
-      run: terraform validate -no-color
-      working-directory: ${{ inputs.workingDir }}
-      shell: bash
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.13.2
+        tf_actions_subcommand: "validate"
+        tf_actions_working_dir: ${{ inputs.workingDir }}
 
     - name: "Replace secrets in IAM key file"
       run: |
