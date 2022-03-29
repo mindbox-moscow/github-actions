@@ -18,6 +18,11 @@ on:
         default: false
         required: false
         type: boolean
+      style_linters:
+        description: "True if need run check-styles"
+        default: false
+        required: false
+        type: boolean
       tests:
         description: "True if need run tests"
         default: false
@@ -132,6 +137,10 @@ jobs:
       - name: Run linters
         if: ${{ inputs.linters }}
         run: npm run check-scripts
+
+      - name: Run style linters
+        if: ${{ inputs.style_linters }}
+        run: npm run check-styles
 
       - name: Run tests
         if: ${{ inputs.tests }}
