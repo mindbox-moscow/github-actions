@@ -3,6 +3,11 @@ name: e2e tests
 on:
   workflow_call:
     inputs:
+      e2e-timeout:
+        description: "Timeout in minutes"
+        default: 20
+        required: false
+        type: number
       retries:
         description: "Number of retries"
         default: 2
@@ -61,7 +66,7 @@ on:
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: ${{ input.e2e-timeout }}
     if: ${{ !contains(github.ref, 'LocalizationPull') }}
     env:
       retries: ${{ inputs.retries }}
