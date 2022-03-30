@@ -3,6 +3,11 @@ name: e2e tests
 on:
   workflow_call:
     inputs:
+      e2e-timeout:
+        description: "Timeout in minutes"
+        default: 20
+        required: false
+        type: number
       retries:
         description: "Number of retries"
         default: 2
@@ -70,7 +75,7 @@ jobs:
       matrix:
         # run 3 copies of the current job in parallel
         containers: [1, 2, 3]
-    timeout-minutes: 75
+    timeout-minutes: ${{ inputs.e2e-timeout }}
     if: ${{ !contains(github.ref, 'LocalizationPull') }}
     env:
       retries: ${{ inputs.retries }}

@@ -1,0 +1,103 @@
+name: 'Composite Terraform'
+description: 'Composite Terraform GitHub Actions'
+inputs:
+  terraformVersion:
+    description: ''
+    required: true
+  githubToken: 
+    description: ''
+    required: true
+  workingDir:
+    description: ''
+    required: true
+  serviceAccountKey:
+    description: ''
+    required: false
+    default: ''
+  serviceAccountKeyFile:
+    description: ''
+    required: false
+    default: "deployment_key.json"
+  tfBackendAccessKey:
+    description: ''
+    required: true
+  tfBackendSecretKey:
+    description: ''
+    required: true
+  planAdditionalVars:
+    description: ''
+    required: false
+    default: ''
+  legacyReplaceSecretKey:
+    description: 'Legacy ci step for Replace secrets in IAM key file'
+    required: false
+    default: ''
+  isLegacyProject:
+    description: 'Legacy ci step for Replace secrets in IAM key file'
+    required: false
+    default: '0' # 0 == false, 1 == true
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup Terraform"
+      uses: hashicorp/setup-terraform@v1
+      with:
+          terraform_version: ${{ inputs.terraformVersion }}
+          terraform_wrapper: false
+
+    - name: "Terraform Format"
+      id: fmt
+      run: terraform fmt
+      # continue-on-error: true
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
+
+    - name: "Terraform Init"
+      id: init
+      run: terraform init
+        -backend-config="access_key=${{ inputs.tfBackendAccessKey }}"
+        -backend-config="secret_key=${{ inputs.tfBackendSecretKey }}"
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
+
+    # - name: "Terraform Validate"
+    #   id: validate
+    #   run: terraform validate -no-color
+    #   working-directory: ${{ inputs.workingDir }}
+    #   shell: bash
+
+    - name: "Terraform Validate"
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.13.2
+        tf_actions_subcommand: "validate"
+        tf_actions_working_dir: ${{ inputs.workingDir }}
+
+    - name: "Replace secrets in IAM key file"
+      run: |
+        if [[ ${{ inputs.isLegacyProject }} -eq "1" ]]; then
+          echo "--- RUN OLD STEP: Replace secrets in IAM key file"
+          private_key=$(echo '${{ inputs.legacyReplaceSecretKey }}' | sed 's:[\/&]:\\&:g;$!s/$/\\/')
+          sed -i 's:#{PRIVATE_KEY}:'"$private_key"':' ${{ inputs.serviceAccountKeyFile }}
+        fi
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
+      
+    - name: "Terraform Plan"
+      id: plan
+      run: |
+        set +e
+        PLAN="terraform plan ${{ inputs.planAdditionalVars }} -no-color -out=plan.tfplan -detailed-exitcode"
+        $PLAN
+        echo "::set-output name=planExitCode::$?"
+        exit 0
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
+    
+    - name: "Terraform Show"
+      id: show
+      run: |
+        terraform show -no-color plan.tfplan
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
