@@ -238,6 +238,22 @@ jobs:
       template_folder: ${{ inputs.template_folder }}
 
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set variables
+        run: |
+          echo "ref_name=$(cat $GITHUB_EVENT_PATH | jq '.ref' | sed 's/refs\/heads\///g' | sed 's/\"//g' | sed 's/[_.\/#]/-/g' | tr '[A-Z]' '[a-z]')" >> $GITHUB_ENV
+          echo "repository_name=$(cat $GITHUB_EVENT_PATH | jq '.repository.name' | sed 's/\"//g')" >> $GITHUB_ENV
+        id: set_variables
+
+      - name: Setup Node.JS
+        uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          node-version: "12.x"
+          registry-url: "https://npm.pkg.github.com/mindbox-moscow"
+
       - name: Run E2E tests on not core project.
         if: ${{ !inputs.core_project }}
         uses: cypress-io/github-action@v2
