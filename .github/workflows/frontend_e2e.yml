@@ -247,6 +247,12 @@ jobs:
           echo "repository_name=$(cat $GITHUB_EVENT_PATH | jq '.repository.name' | sed 's/\"//g')" >> $GITHUB_ENV
         id: set_variables
 
+      - name: Get branch and repo names hash
+        run: echo "hash_payload=$(echo $BRANCH_AND_REPO | md5sum | sed 's/  -//g')"  >> $GITHUB_ENV
+        id: branch_and_repo_hash
+        env:
+          BRANCH_AND_REPO: "${{ env.repository_name }}-${{ env.ref_name }}"
+
       - name: Setup Node.JS
         uses: actions/setup-node@v1
         with:
