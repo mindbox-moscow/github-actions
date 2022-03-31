@@ -400,6 +400,9 @@ jobs:
           node-version: "12.x"
           registry-url: "https://npm.pkg.github.com/mindbox-moscow"
 
+      - name: Authenticate in yandex registry
+        run: echo '${{ secrets.container_registry_key }}' | docker login -u json_key --password-stdin cr.yandex
+
       - name: Run E2E tests on core project.
         run: |
           [ -d ./cypress/${{ matrix.project }} ] && mkdir -p ./cypress/${{ matrix.project }}
