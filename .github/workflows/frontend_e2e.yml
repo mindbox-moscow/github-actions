@@ -352,7 +352,7 @@ jobs:
     needs: core-e2e-tests-matrix
     strategy:
       matrix:
-        project: ${{ needs.core-e2e-tests-matrix.outputs.matrix }}
+        project: ${{ fromJSON(needs.core-e2e-tests-matrix.outputs.matrix) }}
       max-parallel: 4
     timeout-minutes: ${{ inputs.e2e-timeout }}
     if: ${{ !contains(github.ref, 'LocalizationPull') && inputs.core_project }}
