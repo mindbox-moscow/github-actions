@@ -342,7 +342,10 @@ jobs:
           yc config profile create frontend-ci
           echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
           rm iam_key.json
-          project_matrix=$(curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]?" | sed 's/-latest//g'  | jq -R . | jq -s .)
+          project_matrix=$(curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]?" | sed 's/-latest//g' | jq -R . | jq -s .)
+          echo "project_matrix start"
+          echo $project_matrix
+          echo "project_matrix end"
           echo "::set-output name=matrix::$project_matrix"
         env:
           URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
