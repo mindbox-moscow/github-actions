@@ -34,7 +34,7 @@ function get_tag_version {
   local latest_tags=($(git tag --points-at "$latest_sha" | grep "$1-[0-9]"))
   if [[ "${#latest_tags[@]}" != 1 ]]; 
   then
-    local latest_version="2.0.0"
+    local latest_version="1.0.0"
   else
     local latest_version=$(echo ${latest_tags[0]} | sed "s/$1-//")
   fi
