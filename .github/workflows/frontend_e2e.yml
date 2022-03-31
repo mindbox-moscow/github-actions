@@ -343,13 +343,24 @@ jobs:
           echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
           rm iam_key.json
           project_matrix=$(curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]?" | sed 's/-latest//g' | jq -R . | jq -s .)
-          echo "project_matrix start"
-          echo $project_matrix
-          echo "project_matrix end"
           echo "::set-output name=matrix::$project_matrix"
         env:
           URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
-      
+  
+  test-output:
+    runs-on: ubuntu-latest
+    needs: core-e2e-tests-matrix
+    steps: 
+      - name: test output
+        run: echo ${{ needs.core-e2e-tests-matrix.outputs.matrix }}
+
+  test-output-json:
+    runs-on: ubuntu-latest
+    needs: core-e2e-tests-matrix
+    steps: 
+      - name: test output
+        run: ${{ fromJSON(needs.core-e2e-tests-matrix.outputs.matrix) }}
+
   core-e2e-tests-runner:
     runs-on: ubuntu-latest
     needs: core-e2e-tests-matrix
