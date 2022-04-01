@@ -64,9 +64,8 @@ on:
         description: 'A CYPRESS_PASSWORD token passed from the caller workflow'
         required: true
 jobs:
-  e2e-tests:
+  prepare-site:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.e2e-timeout }}
     if: ${{ !contains(github.ref, 'LocalizationPull') }}
     env:
       retries: ${{ inputs.retries }}
@@ -211,8 +210,56 @@ jobs:
         with:
           args: kubectl apply -f ./hot_build/e2e/kubernetes/deploy.yml
 
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: prepare-site
+    timeout-minutes: ${{ inputs.e2e-timeout }}
+    if: ${{ !contains(github.ref, 'LocalizationPull') && !inputs.core_project }}
+    env:
+      retries: ${{ inputs.retries }}
+      CYPRESS_username: "${{ secrets.cypress_login }}"
+      CYPRESS_password: "${{ secrets.cypress_pass }}"
+      registry: cr.yandex/${{ inputs.registry_id }}
+      image: ${{ inputs.image_name }}
+      template_bucket: ${{ inputs.template_bucket }}
+      template_folder: ${{ inputs.template_folder }}
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set variables
+        run: |
+          echo "ref_name=$(cat $GITHUB_EVENT_PATH | jq '.ref' | sed 's/refs\/heads\///g' | sed 's/\"//g' | sed 's/[_.\/#]/-/g' | tr '[A-Z]' '[a-z]')" >> $GITHUB_ENV
+          echo "repository_name=$(cat $GITHUB_EVENT_PATH | jq '.repository.name' | sed 's/\"//g')" >> $GITHUB_ENV
+        id: set_variables
+
+      - name: Get branch and repo names hash
+        run: echo "hash_payload=$(echo $BRANCH_AND_REPO | md5sum | sed 's/  -//g')"  >> $GITHUB_ENV
+        id: branch_and_repo_hash
+        env:
+          BRANCH_AND_REPO: "${{ env.repository_name }}-${{ env.ref_name }}"
+
+      - name: Set project path
+        run: |
+          project_name=$(cat ./package.json | jq .name | sed -s 's/@mindbox-moscow\///g' | sed -s 's/-/_/g' | sed -s 's/"//g')
+          if [[ $project_name == "frontend_core_v2" ]]; then
+            echo "project_folder=core" >> $GITHUB_ENV
+            echo "project_name=core" >> $GITHUB_ENV
+          else
+            echo "project_folder=$project_name" >> $GITHUB_ENV
+            echo "project_name=$project_name" >> $GITHUB_ENV
+          fi
+        id: set_project
+
+      - name: Setup Node.JS
+        uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          node-version: "12.x"
+          registry-url: "https://npm.pkg.github.com/mindbox-moscow"
+
       - name: Run E2E tests on not core project.
-        if: ${{ !inputs.core_project }}
         uses: cypress-io/github-action@v2
         with:
           start: npm run e2e:ci
@@ -220,49 +267,12 @@ jobs:
           config: baseUrl=${{ env.E2E_URL }},retries=${{ env.retries }},videoUploadOnPasses=false,videoCompression=false
           working-directory: e2e
           browser: chrome
+          headless: true
         env:
           E2E_URL: https://e2e-testing-${{ env.hash_payload }}.staging.directcrm.ru
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token }}
-
-      - name: Install YC
-        if: ${{ inputs.core_project }}
-        run: |
-          sudo curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
-          sudo ln -s /home/runner/yandex-cloud/bin/yc /bin/yc
-
-      - name: Create e2e tests list
-        if: ${{ inputs.core_project }}
-        run: |
-          yc config profile create frontend-ci
-          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
-          rm iam_key.json
-          curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]?" | sed 's/-latest//g'  > ./e2e_tests.txt
-        env:
-          URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
-
-      - name: Run E2E tests on core project.
-        if: ${{ inputs.core_project }}
-        run: |
-          IFS=$'\n'; set -f; E2E_TESTS=($(cat ./e2e_tests.txt))
-          for e2e in "${E2E_TESTS[@]}"
-          do
-            [ -d ./cypress/$e2e ] && mkdir -p ./cypress/$e2e
-            mkdir -p ./cypress/$e2e/videos && mkdir -p ./cypress/$e2e/screenshots
-
-            docker run -i \
-              --pull always \
-              -e BASE_URL="${{ env.E2E_URL }}" \
-              -e RETRIES="${{ env.retries }}" \
-              -e CYPRESS_username=${{ secrets.cypress_login }} \
-              -e CYPRESS_password=${{ secrets.cypress_pass }} \
-              -v $(pwd)/cypress/$e2e/videos:/e2e/cypress/videos \
-              -v $(pwd)/cypress/$e2e/screenshots:/e2e/cypress/screenshots \
-              cr.yandex/${{ inputs.registry_id }}/frontend-e2e:$e2e-latest 2>&1
-          done
-        env:
-          E2E_URL: https://e2e-testing-${{ env.hash_payload }}.staging.directcrm.ru
 
       - name: Upload test results artifacts
         uses: actions/upload-artifact@v2
@@ -272,8 +282,159 @@ jobs:
           path: e2e/cypress
           retention-days: 1
 
-      - name: Add comment to commit if the job has failed
+  core-e2e-tests-matrix:
+    runs-on: ubuntu-latest
+    needs: prepare-site
+    if: ${{ !contains(github.ref, 'LocalizationPull') && inputs.core_project }}
+    env:
+      retries: ${{ inputs.retries }}
+      CYPRESS_username: "${{ secrets.cypress_login }}"
+      CYPRESS_password: "${{ secrets.cypress_pass }}"
+      registry: cr.yandex/${{ inputs.registry_id }}
+      image: ${{ inputs.image_name }}
+      template_bucket: ${{ inputs.template_bucket }}
+      template_folder: ${{ inputs.template_folder }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set variables
+        run: |
+          echo "ref_name=$(cat $GITHUB_EVENT_PATH | jq '.ref' | sed 's/refs\/heads\///g' | sed 's/\"//g' | sed 's/[_.\/#]/-/g' | tr '[A-Z]' '[a-z]')" >> $GITHUB_ENV
+          echo "repository_name=$(cat $GITHUB_EVENT_PATH | jq '.repository.name' | sed 's/\"//g')" >> $GITHUB_ENV
+        id: set_variables
+
+      - name: Get branch and repo names hash
+        run: echo "hash_payload=$(echo $BRANCH_AND_REPO | md5sum | sed 's/  -//g')"  >> $GITHUB_ENV
+        id: branch_and_repo_hash
+        env:
+          BRANCH_AND_REPO: "${{ env.repository_name }}-${{ env.ref_name }}"
+
+      - name: Set project path
+        run: |
+          project_name=$(cat ./package.json | jq .name | sed -s 's/@mindbox-moscow\///g' | sed -s 's/-/_/g' | sed -s 's/"//g')
+          if [[ $project_name == "frontend_core_v2" ]]; then
+            echo "project_folder=core" >> $GITHUB_ENV
+            echo "project_name=core" >> $GITHUB_ENV
+          else
+            echo "project_folder=$project_name" >> $GITHUB_ENV
+            echo "project_name=$project_name" >> $GITHUB_ENV
+          fi
+        id: set_project
+
+      - name: Setup Node.JS
+        uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          node-version: "12.x"
+          registry-url: "https://npm.pkg.github.com/mindbox-moscow"
+
+      - name: Install YC
+        run: |
+          sudo curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          sudo ln -s /home/runner/yandex-cloud/bin/yc /bin/yc
+
+      - name: Create e2e tests list
+        id: set-matrix
+        run: |
+          yc config profile create frontend-ci
+          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
+          rm iam_key.json
+          project_matrix=$(curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]?" | sed 's/-latest//g' | jq -R . | jq -s -c .)
+          echo "::set-output name=matrix::$project_matrix"
+        env:
+          URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
+  
+  core-e2e-tests-runner:
+    runs-on: ubuntu-latest
+    needs: core-e2e-tests-matrix
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.core-e2e-tests-matrix.outputs.matrix) }}
+      max-parallel: 4
+    timeout-minutes: ${{ inputs.e2e-timeout }}
+    if: ${{ !contains(github.ref, 'LocalizationPull') && inputs.core_project }}
+    env:
+      retries: ${{ inputs.retries }}
+      CYPRESS_username: "${{ secrets.cypress_login }}"
+      CYPRESS_password: "${{ secrets.cypress_pass }}"
+      registry: cr.yandex/${{ inputs.registry_id }}
+      image: ${{ inputs.image_name }}
+      template_bucket: ${{ inputs.template_bucket }}
+      template_folder: ${{ inputs.template_folder }}
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set variables
+        run: |
+          echo "ref_name=$(cat $GITHUB_EVENT_PATH | jq '.ref' | sed 's/refs\/heads\///g' | sed 's/\"//g' | sed 's/[_.\/#]/-/g' | tr '[A-Z]' '[a-z]')" >> $GITHUB_ENV
+          echo "repository_name=$(cat $GITHUB_EVENT_PATH | jq '.repository.name' | sed 's/\"//g')" >> $GITHUB_ENV
+        id: set_variables
+
+      - name: Get branch and repo names hash
+        run: echo "hash_payload=$(echo $BRANCH_AND_REPO | md5sum | sed 's/  -//g')"  >> $GITHUB_ENV
+        id: branch_and_repo_hash
+        env:
+          BRANCH_AND_REPO: "${{ env.repository_name }}-${{ env.ref_name }}"
+
+      - name: Set project path
+        run: |
+          project_name=$(cat ./package.json | jq .name | sed -s 's/@mindbox-moscow\///g' | sed -s 's/-/_/g' | sed -s 's/"//g')
+          if [[ $project_name == "frontend_core_v2" ]]; then
+            echo "project_folder=core" >> $GITHUB_ENV
+            echo "project_name=core" >> $GITHUB_ENV
+          else
+            echo "project_folder=$project_name" >> $GITHUB_ENV
+            echo "project_name=$project_name" >> $GITHUB_ENV
+          fi
+        id: set_project
+
+      - name: Setup Node.JS
+        uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          node-version: "12.x"
+          registry-url: "https://npm.pkg.github.com/mindbox-moscow"
+
+      - name: Authenticate in yandex registry
+        run: echo '${{ secrets.container_registry_key }}' | docker login -u json_key --password-stdin cr.yandex
+
+      - name: Run E2E tests on core project.
+        run: |
+          [ -d ./cypress/${{ matrix.project }} ] && mkdir -p ./cypress/${{ matrix.project }}
+          mkdir -p ./cypress/${{ matrix.project }}/videos && mkdir -p ./cypress/${{ matrix.project }}/screenshots
+
+          docker run -i \
+            --pull always \
+            -e BASE_URL="${{ env.E2E_URL }}" \
+            -e RETRIES="${{ env.retries }}" \
+            -e CYPRESS_username=${{ secrets.cypress_login }} \
+            -e CYPRESS_password=${{ secrets.cypress_pass }} \
+            -v $(pwd)/cypress/${{ matrix.project }}/videos:/e2e/cypress/videos \
+            -v $(pwd)/cypress/${{ matrix.project }}/screenshots:/e2e/cypress/screenshots \
+            cr.yandex/${{ inputs.registry_id }}/frontend-e2e:${{ matrix.project }}-latest 2>&1
+        env:
+          E2E_URL: https://e2e-testing-${{ env.hash_payload }}.staging.directcrm.ru
+
+      - name: Upload test results artifacts
+        uses: actions/upload-artifact@v2
         if: ${{ failure() }}
+        with:
+          name: cypress-${{ matrix.project }}
+          path: e2e/cypress
+          retention-days: 1
+
+  post-e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, core-e2e-tests-runner]
+    if: ${{ failure() }}
+    steps:
+      - name: Add comment to commit if the job has failed
         run: |
           jq -nc '{"body": ":negative_squared_cross_mark: E2E tests failed. Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' | \
           curl -sL -X POST -d @- \
