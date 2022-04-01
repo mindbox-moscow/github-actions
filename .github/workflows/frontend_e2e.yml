@@ -63,10 +63,13 @@ on:
       cypress_pass:
         description: 'A CYPRESS_PASSWORD token passed from the caller workflow'
         required: true
+      cypress_record_key:
+        description: 'A cypress dashbord project key'
+        required: true
+
 jobs:
-  e2e-tests:
+  prepare-site:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.e2e-timeout }}
     if: ${{ !contains(github.ref, 'LocalizationPull') }}
     env:
       retries: ${{ inputs.retries }}
@@ -211,6 +214,52 @@ jobs:
         with:
           args: kubectl apply -f ./hot_build/e2e/kubernetes/deploy.yml
 
+  e2e-tests:
+    needs: prepare-site
+    runs-on: ubuntu-latest
+    strategy:
+      # when one test fails, DO NOT cancel the other
+      # containers, because this will kill Cypress processes
+      # leaving the Dashboard hanging ...
+      # https://github.com/cypress-io/github-action/issues/48
+      fail-fast: false
+      matrix:
+        # run 3 copies of the current job in parallel
+        containers: [1, 2, 3]
+    timeout-minutes: ${{ inputs.e2e-timeout }}
+    if: ${{ !contains(github.ref, 'LocalizationPull') }}
+    env:
+      retries: ${{ inputs.retries }}
+      CYPRESS_username: "${{ secrets.cypress_login }}"
+      CYPRESS_password: "${{ secrets.cypress_pass }}"
+      registry: cr.yandex/${{ inputs.registry_id }}
+      image: ${{ inputs.image_name }}
+      template_bucket: ${{ inputs.template_bucket }}
+      template_folder: ${{ inputs.template_folder }}
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set variables
+        run: |
+          echo "ref_name=$(cat $GITHUB_EVENT_PATH | jq '.ref' | sed 's/refs\/heads\///g' | sed 's/\"//g' | sed 's/[_.\/#]/-/g' | tr '[A-Z]' '[a-z]')" >> $GITHUB_ENV
+          echo "repository_name=$(cat $GITHUB_EVENT_PATH | jq '.repository.name' | sed 's/\"//g')" >> $GITHUB_ENV
+        id: set_variables
+
+      - name: Get branch and repo names hash
+        run: echo "hash_payload=$(echo $BRANCH_AND_REPO | md5sum | sed 's/  -//g')"  >> $GITHUB_ENV
+        id: branch_and_repo_hash
+        env:
+          BRANCH_AND_REPO: "${{ env.repository_name }}-${{ env.ref_name }}"
+
+      - name: Setup Node.JS
+        uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          node-version: "12.x"
+          registry-url: "https://npm.pkg.github.com/mindbox-moscow"
+
       - name: Run E2E tests on not core project.
         if: ${{ !inputs.core_project }}
         uses: cypress-io/github-action@v2
@@ -220,11 +269,14 @@ jobs:
           config: baseUrl=${{ env.E2E_URL }},retries=${{ env.retries }},videoUploadOnPasses=false,videoCompression=false
           working-directory: e2e
           browser: chrome
+          parallel: true
+          record: true
         env:
           E2E_URL: https://e2e-testing-${{ env.hash_payload }}.staging.directcrm.ru
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token }}
+          CYPRESS_RECORD_KEY: ${{ secrets.cypress_record_key }}
 
       - name: Install YC
         if: ${{ inputs.core_project }}
@@ -280,3 +332,4 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/comments"
+
