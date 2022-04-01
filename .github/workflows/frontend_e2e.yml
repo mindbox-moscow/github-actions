@@ -267,6 +267,7 @@ jobs:
           config: baseUrl=${{ env.E2E_URL }},retries=${{ env.retries }},videoUploadOnPasses=false,videoCompression=false
           working-directory: e2e
           browser: chrome
+          headless: true
         env:
           E2E_URL: https://e2e-testing-${{ env.hash_payload }}.staging.directcrm.ru
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
