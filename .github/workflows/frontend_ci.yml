@@ -286,7 +286,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: mindbox-moscow/github-actions/create-github-release@master
+        uses: mindbox-moscow/github-actions/create-github-release@zlebnik-temporary-remove-release-notes
         with:
           release-number: ${{ steps.release-number.outputs.release-number }}
           checkout: false
