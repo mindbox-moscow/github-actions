@@ -43,12 +43,6 @@ runs:
       env:
         REPO: ${{ github.repository }}
 
-    - name: clean changelog from quotes
-      run: |
-        echo "::set-output name=changelog::$((echo "${{ steps.changelog.outputs.changelog }}") | sed "s/\"//g" | sed "s/'//g" )"
-      id: clean-changelog
-      shell: bash
-
     - name: "Create GitHub Release"
       id: create_release
       uses: actions/create-release@master
@@ -57,7 +51,6 @@ runs:
       with:
         tag_name: "${{ inputs.release-number != 'empty' && inputs.release-number || steps.release-number.outputs.release-number }}"
         release_name: "Release ${{ inputs.release-number != 'empty' && inputs.release-number || steps.release-number.outputs.release-number }}"
-        body: |
-          ${{ steps.changelog.outputs.changelog }}
+        body: ""
         draft: false
         prerelease: ${{ inputs.prerelease }}
