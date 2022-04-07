@@ -14,7 +14,7 @@ function increment_version {
     for (( p=`grep -o "\."<<<".$v"|wc -l`; p<$2; p++)); do 
        v+=.0; done; fi
  val=`echo -e "$v" | perl -pe 's/^.*'$rgx'.*$/$2/'`
- echo "$v" | perl -pe s/$rgx.*$'/${1}'`printf %0${#val}s $(($val+10))`/
+ echo "$v" | perl -pe s/$rgx.*$'/${1}'`printf %0${#val}s $(($val+1))`/
 }
 
 get_tag_name_output=""
