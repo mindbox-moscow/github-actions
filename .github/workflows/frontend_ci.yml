@@ -156,7 +156,7 @@ jobs:
     needs: checking
     concurrency: release
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/master' }}
+#    if: ${{ github.ref == 'refs/heads/master' }}
     timeout-minutes: 15
     env:
       registry: cr.yandex/${{ inputs.registry_id }}
