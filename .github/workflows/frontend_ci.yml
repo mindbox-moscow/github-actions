@@ -200,13 +200,13 @@ jobs:
           node-version: "12.x"
           registry-url: "https://npm.pkg.github.com/mindbox-moscow"
 
-      - name: Install deps
-        run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
-
-      - name: Disable Lefthook
-        run: echo "LEFTHOOK=0" >> $GITHUB_ENV
+#      - name: Install deps
+#        run: npm ci
+#        env:
+#          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+#
+#      - name: Disable Lefthook
+#        run: echo "LEFTHOOK=0" >> $GITHUB_ENV
 
 #      - name: Build and format npm-package
 #        run: npm run build
