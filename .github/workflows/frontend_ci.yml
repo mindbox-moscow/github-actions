@@ -235,6 +235,13 @@ jobs:
         with:
           version: ${{ steps.release-number.outputs.release-number }}
 
+      - name: Git Identity
+        run: |
+          git config --global user.name 'service-github-push-front'
+          git config --global user.email 'service_github_push_front@mindbox.ru'
+        env:
+          GITHUB_TOKEN: ${{ secrets.FRONTEND_GHA_FULL_TOKEN }}
+
       - name: commit new version
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
