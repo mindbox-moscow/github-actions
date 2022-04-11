@@ -229,93 +229,105 @@ jobs:
           SENTRY_AUTOBUGS_URL: ${{ env.sentry_autobugs_url }}
           SENTRY_AUTOBUGS_RELEASE: ${{ steps.release-number.outputs.release-number }} (${{ github.sha }})
 
-      - name: Copy package.json to build folder
-        run: cp ./package.json ./build/
-
-      - name: Install YC
-        run: |
-          sudo curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
-          sudo ln -s /home/runner/yandex-cloud/bin/yc /bin/yc
-
-      - name: Create e2e tests list
-        run: |
-          yc config profile create frontend-ci
-          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
-          rm iam_key.json
-          curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]" | sed 's/-latest//g'  > ./build/e2e_tests.txt
-        env:
-          URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
-
-      - name: Create artifact
-        run: zip -r ${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip ./build
-
-      - name: Install e2e deps
-        if: ${{ inputs.e2e_tag }}
-        run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
-        working-directory: ./e2e
-
-      - name: Download e2e tests Dockerfile
-        if: ${{ inputs.e2e_tag }}
-        run: |
-          wget --header 'Authorization: token ${{ secrets.frontend_gha_full_token }}' https://raw.githubusercontent.com/mindbox-moscow/frontend-cypress/master/docker/Dockerfile
-        working-directory: ./e2e
-
-      - name: Remove old e2e image
-        if: ${{ inputs.e2e_tag }}
-        run: |
-          imageId=$(curl -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r '.images[] | select(.tags[]? == "${{ env.e2e-tag }}") | .id')
-          curl -X DELETE -H "Authorization: Bearer $(yc iam create-token)" $URL/$imageId
-        env:
-          URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
-
-      - name: Build e2e docker images
-        if: ${{ inputs.e2e_tag }}
-        run: docker build . -t ${{ env.registry }}/${{ env.e2e-image }}:${{ env.e2e-tag }}
-        working-directory: ./e2e
-
-      - name: Authenticate in yandex registry
-        if: ${{ inputs.e2e_tag }}
-        run: echo '${{ secrets.container_registry_key }}' | docker login -u json_key --password-stdin cr.yandex
-
-      - name: Push e2e docker image to registry
-        if: ${{ inputs.e2e_tag }}
-        run: |
-          docker push ${{ env.registry }}/${{ env.e2e-image }}:${{ env.e2e-tag }}
-
-      - name: Create Release
-        id: create_release
-        uses: mindbox-moscow/github-actions/create-github-release@master
+      - name: Set version
+        id: package_version
+        uses: KageKirin/set-node-package-version@v0
         with:
-          release-number: ${{ steps.release-number.outputs.release-number }}
-          checkout: false
+          version: ${{ steps.release-number.outputs.release-number }}
 
-      - name: Push package to Octopus repository
-        uses: docker://octopusdeploy/octo
+      - name: commit new version
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          args: >
-            push
-            --package="./${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip"
-            --server ${{ secrets.octopus_server }}
-            --apikey ${{ secrets.octopus_api_key }}
+          commit_message: upd release version [ci skip]
+          commit_options: '--no-verify'
 
-      - name: "Create Octopus Release"
-        uses: docker://octopusdeploy/octo
-        with:
-          args: >
-            create-release
-            --server ${{ secrets.octopus_server }}
-            --project "${{ env.octopus_project_name }}"
-            --version ${{ steps.release-number.outputs.release-number }}
-            --channel Default
-            --tenant=*
-            --apikey ${{ secrets.octopus_api_key }}
-            --releasenotes "${{ steps.create-release.outputs.release-notes-body }}"
-
-      - name: Amixr notification if failure
-        uses: joelwmale/webhook-action@master
-        if: ${{ failure() }}
-        with:
-          url: ${{ secrets.failure_notify_url }}
-          body: '{"title": "Build ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\nAutor: ${{ github.actor }}"}'
+#      - name: Copy package.json to build folder
+#        run: cp ./package.json ./build/
+#
+#      - name: Install YC
+#        run: |
+#          sudo curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+#          sudo ln -s /home/runner/yandex-cloud/bin/yc /bin/yc
+#
+#      - name: Create e2e tests list
+#        run: |
+#          yc config profile create frontend-ci
+#          echo '${{ secrets.container_registry_key }}' >> iam_key.json | yc config set service-account-key iam_key.json
+#          rm iam_key.json
+#          curl -s -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r ".images[].tags[]" | sed 's/-latest//g'  > ./build/e2e_tests.txt
+#        env:
+#          URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
+#
+#      - name: Create artifact
+#        run: zip -r ${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip ./build
+#
+#      - name: Install e2e deps
+#        if: ${{ inputs.e2e_tag }}
+#        run: npm ci
+#        env:
+#          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+#        working-directory: ./e2e
+#
+#      - name: Download e2e tests Dockerfile
+#        if: ${{ inputs.e2e_tag }}
+#        run: |
+#          wget --header 'Authorization: token ${{ secrets.frontend_gha_full_token }}' https://raw.githubusercontent.com/mindbox-moscow/frontend-cypress/master/docker/Dockerfile
+#        working-directory: ./e2e
+#
+#      - name: Remove old e2e image
+#        if: ${{ inputs.e2e_tag }}
+#        run: |
+#          imageId=$(curl -H "Authorization: Bearer $(yc iam create-token)" $URL?repositoryName=${{ inputs.registry_id }}/frontend-e2e | jq -r '.images[] | select(.tags[]? == "${{ env.e2e-tag }}") | .id')
+#          curl -X DELETE -H "Authorization: Bearer $(yc iam create-token)" $URL/$imageId
+#        env:
+#          URL: "https://container-registry.api.cloud.yandex.net/container-registry/v1/images"
+#
+#      - name: Build e2e docker images
+#        if: ${{ inputs.e2e_tag }}
+#        run: docker build . -t ${{ env.registry }}/${{ env.e2e-image }}:${{ env.e2e-tag }}
+#        working-directory: ./e2e
+#
+#      - name: Authenticate in yandex registry
+#        if: ${{ inputs.e2e_tag }}
+#        run: echo '${{ secrets.container_registry_key }}' | docker login -u json_key --password-stdin cr.yandex
+#
+#      - name: Push e2e docker image to registry
+#        if: ${{ inputs.e2e_tag }}
+#        run: |
+#          docker push ${{ env.registry }}/${{ env.e2e-image }}:${{ env.e2e-tag }}
+#
+#      - name: Create Release
+#        id: create_release
+#        uses: mindbox-moscow/github-actions/create-github-release@master
+#        with:
+#          release-number: ${{ steps.release-number.outputs.release-number }}
+#          checkout: false
+#
+#      - name: Push package to Octopus repository
+#        uses: docker://octopusdeploy/octo
+#        with:
+#          args: >
+#            push
+#            --package="./${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip"
+#            --server ${{ secrets.octopus_server }}
+#            --apikey ${{ secrets.octopus_api_key }}
+#
+#      - name: "Create Octopus Release"
+#        uses: docker://octopusdeploy/octo
+#        with:
+#          args: >
+#            create-release
+#            --server ${{ secrets.octopus_server }}
+#            --project "${{ env.octopus_project_name }}"
+#            --version ${{ steps.release-number.outputs.release-number }}
+#            --channel Default
+#            --tenant=*
+#            --apikey ${{ secrets.octopus_api_key }}
+#            --releasenotes "${{ steps.create-release.outputs.release-notes-body }}"
+#
+#      - name: Amixr notification if failure
+#        uses: joelwmale/webhook-action@master
+#        if: ${{ failure() }}
+#        with:
+#          url: ${{ secrets.failure_notify_url }}
+#          body: '{"title": "Build ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\nAutor: ${{ github.actor }}"}'
