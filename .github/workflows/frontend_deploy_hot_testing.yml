@@ -115,6 +115,7 @@ jobs:
           repository: mindbox-moscow/frontend-deploy
           token: ${{ secrets.frontend_gha_full_token }}
           path: ./hot_build
+          ref: rudentsov/legacy_microfrontend
 
       - name: Create proto-html folder
         run: |
