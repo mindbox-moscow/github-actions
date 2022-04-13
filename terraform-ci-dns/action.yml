@@ -94,7 +94,23 @@ runs:
         exit 0
       working-directory: ${{ inputs.workingDir }}
       shell: bash
+
+    - name: "Fail if plan failed"
+      id: failIfPlanFailed
+      run: |
+        set -x
+        if [[ ${{ steps.plan.outputs.planExitCode }} -eq 1 ]]; then
+          echo "debug plan failed"
+          exit 1
+        fi
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
     
+    - name: "Setup Terraform"
+      uses: hashicorp/setup-terraform@v1
+      with:
+          terraform_version: ${{ inputs.terraformVersion }}
+
     - name: "Terraform Show"
       id: show
       run: |
@@ -125,7 +141,6 @@ runs:
             \`\`\`
             
             </details>
-            
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.workingDir }}\`, Workflow: \`${{ github.workflow }}\`*`;
             github.issues.createComment({
               issue_number: context.issue.number,
