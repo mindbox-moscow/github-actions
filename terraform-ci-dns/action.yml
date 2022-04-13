@@ -91,24 +91,28 @@ runs:
         PLAN="terraform plan ${{ inputs.planAdditionalVars }} -no-color -out=plan.tfplan -detailed-exitcode"
         $PLAN
         echo "::set-output name=planExitCode::$?"
+        if [[ $? -ne 0 ]]; then
+          planOutput=$(terraform show -no-color plan.tfplan)
+          echo "::set-output name=planResult::$planOutput"
+        fi
         exit 0
       working-directory: ${{ inputs.workingDir }}
       shell: bash
     
-    - name: "Terraform Show"
-      id: show
-      run: |
-        if [[ ${{ steps.plan.outputs.planExitCode }} -ne 0 ]]; then
-          planOutput=$(terraform show -no-color plan.tfplan)
-          echo "::set-output name=planResult::$planOutput"
-        fi
-      working-directory: ${{ inputs.workingDir }}
-      shell: bash
+    # - name: "Terraform Show"
+    #   id: show
+    #   run: |
+    #     if [[ ${{ steps.plan.outputs.planExitCode }} -ne 0 ]]; then
+    #       planOutput=$(terraform show -no-color plan.tfplan)
+    #       echo "::set-output name=planResult::$planOutput"
+    #     fi
+    #   working-directory: ${{ inputs.workingDir }}
+    #   shell: bash
 
     - uses: actions/github-script@0.9.0
       name: "Comment plan"
       env:
-        PLAN: "${{ steps.show.outputs.planOutput }}"
+        PLAN: "${{ steps.plan.outputs.planOutput }}"
         CONDITION: "${{ steps.plan.outputs.planExitCode }}"
       with:
         github-token: ${{ inputs.githubToken }}
