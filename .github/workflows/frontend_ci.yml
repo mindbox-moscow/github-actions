@@ -310,7 +310,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           file_pattern: package.json
-          commit-message: 'chore: upd release version ${{ steps.release-number.outputs.release-number }} [ci skip]'
+          commit_message: 'chore: upd release version ${{ steps.release-number.outputs.release-number }} [ci skip]'
           commit_options: '--no-verify'
 
 
