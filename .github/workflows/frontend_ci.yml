@@ -175,7 +175,9 @@ jobs:
           echo "##[set-output name=repository_name;]$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')"
 
       - name: Checkout the repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.FRONTEND_GHA_FULL_TOKEN }}
 
       - name: Set project path
         run: |
@@ -228,6 +230,12 @@ jobs:
           SENTRY_AUTOBUGS_PROJECT: ${{ inputs.sentry_autobugs_project }}
           SENTRY_AUTOBUGS_URL: ${{ env.sentry_autobugs_url }}
           SENTRY_AUTOBUGS_RELEASE: ${{ steps.release-number.outputs.release-number }} (${{ github.sha }})
+
+      - name: Set new version
+        id: package_version
+        uses: KageKirin/set-node-package-version@v0
+        with:
+          version: ${{ steps.release-number.outputs.release-number }}
 
       - name: Copy package.json to build folder
         run: cp ./package.json ./build/
@@ -290,6 +298,21 @@ jobs:
         with:
           release-number: ${{ steps.release-number.outputs.release-number }}
           checkout: false
+
+      - name: Git Identity
+        run: |
+          git config --global user.name 'service-github-push-front'
+          git config --global user.email 'service_github_push_front@mindbox.ru'
+        env:
+          GITHUB_TOKEN: ${{ secrets.FRONTEND_GHA_FULL_TOKEN }}
+
+      - name: commit new version
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          file_pattern: package.json
+          commit-message: 'chore: upd release version ${{ steps.release-number.outputs.release-number }} [ci skip]'
+          commit_options: '--no-verify'
+
 
       - name: Push package to Octopus repository
         uses: docker://octopusdeploy/octo
