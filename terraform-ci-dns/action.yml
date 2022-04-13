@@ -99,7 +99,8 @@ runs:
       id: show
       run: |
         if [[ ${{ steps.plan.outputs.planExitCode }} -ne 0 ]]; then
-          terraform show -no-color plan.tfplan
+          planOutput=$(terraform show -no-color plan.tfplan)
+          echo "::set-output name=planResult::$planOutput"
         fi
       working-directory: ${{ inputs.workingDir }}
       shell: bash
