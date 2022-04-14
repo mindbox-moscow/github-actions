@@ -37,6 +37,10 @@ runs:
       with:
         token: ${{ github.token }}
 
+    - name: Trust workspace directory
+      run: git config --global --add safe.directory /github/workspace
+      shell: bash
+
     - name: Changelog
       uses: Bullrich/generate-release-changelog@master
       id: changelog
