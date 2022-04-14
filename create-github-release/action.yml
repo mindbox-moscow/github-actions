@@ -38,7 +38,7 @@ runs:
         token: ${{ github.token }}
 
     - name: Changelog
-      uses: mindbox-moscow/github-actions/generate-release-changelog@master
+      uses: mindbox-moscow/generate-release-changelog@master
       id: changelog
       env:
         REPO: ${{ github.repository }}
