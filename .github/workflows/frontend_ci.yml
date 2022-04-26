@@ -212,6 +212,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
+      - name: Set new version
+        id: package_version
+        uses: KageKirin/set-node-package-version@v0
+        with:
+          version: ${{ steps.release-number.outputs.release-number }}
+
       - name: Disable Lefthook
         run: echo "LEFTHOOK=0" >> $GITHUB_ENV
 
@@ -235,12 +241,6 @@ jobs:
           SENTRY_AUTOBUGS_PROJECT: ${{ inputs.sentry_autobugs_project }}
           SENTRY_AUTOBUGS_URL: ${{ env.sentry_autobugs_url }}
           SENTRY_AUTOBUGS_RELEASE: ${{ steps.release-number.outputs.release-number }} (${{ github.sha }})
-
-      - name: Set new version
-        id: package_version
-        uses: KageKirin/set-node-package-version@v0
-        with:
-          version: ${{ steps.release-number.outputs.release-number }}
 
       - name: Copy package.json to build folder
         run: cp ./package.json ./build/
