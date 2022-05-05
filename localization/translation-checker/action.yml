@@ -1,0 +1,13 @@
+# action.yml
+name: 'Check translation'
+description: 'Checks Mindbox i18n files in .NET solution'
+inputs:
+  skip-inclusion-check:
+    description: 'Forces checker to skip inclusion check if --skipInclusionCheck is passed as a value'
+    required: false
+    default: ''
+runs:
+  using: 'docker'
+  image: 'docker://mindboxmoscow/translation-checker-gha'
+  args:
+    - ${{ inputs.skip-inclusion-check }}
