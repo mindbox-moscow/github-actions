@@ -1,5 +1,4 @@
 name: Phrase sync
-description: Pushes local localization keys to PhraseApp, then pulls new localization keys from PhraseApp.
 on:
   workflow_call:
     secrets:
