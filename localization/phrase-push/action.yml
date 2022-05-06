@@ -1,0 +1,20 @@
+# action.yml
+name: 'Phrase push'
+description: 'Pushes new localization keys to PhraseApp'
+inputs:
+  phraseAppToken:
+    description: 'Token to access PhraseApp'
+    required: false
+    default: ${{ secrets.PHRASE_TOKEN }}
+  slackWebhookUrl:
+    description: 'Slack webhook to post notification'
+    required: true
+
+runs:
+  using: 'docker'
+  image: 'docker://mindboxmoscow/phrase-integration-gha'
+  args:
+   - push
+  env:
+    phraseAppToken: ${{ inputs.phraseAppToken }}
+    slackWebhookUrl: ${{ inputs.slackWebhookUrl }}

@@ -1,0 +1,21 @@
+# action.yml
+name: 'Phrase pull'
+description: 'Pulls mindbox i18n resources from PhraseApp'
+inputs:
+  gitHubToken:
+    description: 'Token to create pr-s'
+    required: false
+    default: ${{ secrets.GH_FULL_TOKEN }}
+  phraseAppToken:
+    description: 'Token to access PhraseApp'
+    required: false
+    default: ${{ secrets.PHRASE_TOKEN }}
+
+runs:
+  using: 'docker'
+  image: 'docker://mindboxmoscow/phrase-integration-gha'
+  args:
+   - pull
+  env:
+    gitHubToken: ${{ inputs.gitHubToken }}
+    phraseAppToken: ${{ inputs.phraseAppToken }}
