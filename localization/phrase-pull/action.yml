@@ -4,12 +4,10 @@ description: 'Pulls mindbox i18n resources from PhraseApp'
 inputs:
   gitHubToken:
     description: 'Token to create pr-s'
-    required: false
-    default: ${{ secrets.GH_FULL_TOKEN }}
+    required: true
   phraseAppToken:
     description: 'Token to access PhraseApp'
-    required: false
-    default: ${{ secrets.PHRASE_TOKEN }}
+    required: true
 
 runs:
   using: 'docker'
