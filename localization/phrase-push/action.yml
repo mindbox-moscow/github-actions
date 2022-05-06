@@ -1,15 +1,13 @@
 # action.yml
-name: 'Phrase integration'
-description: 'Pushes and pulls mindbox i18n resources'
+name: 'Phrase push'
+description: 'Pushes new localization keys to PhraseApp'
 inputs:
-  gitHubToken:
-    description: 'token to create pr-s'
-    required: true
   phraseAppToken:
-    description: 'token to access phrase'
-    required: true
+    description: 'Token to access PhraseApp'
+    required: false
+    default: ${{ secrets.PHRASE_TOKEN }}
   slackWebhookUrl:
-    description: 'slack webhook to post notification'
+    description: 'Slack webhook to post notification'
     required: true
 
 runs:
@@ -18,6 +16,5 @@ runs:
   args:
    - push
   env:
-    gitHubToken: ${{ inputs.gitHubToken }}
     phraseAppToken: ${{ inputs.phraseAppToken }}
     slackWebhookUrl: ${{ inputs.slackWebhookUrl }}

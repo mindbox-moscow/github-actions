@@ -3,11 +3,16 @@ name: 'Check translation'
 description: 'Checks Mindbox i18n files in .NET solution'
 inputs:
   skip-inclusion-check:
-    description: 'Forces checker to skip inclusion check if --skipInclusionCheck is passed as a value'
+    description: 'Forces checker to skip inclusion check'
     required: false
-    default: ''
+    default: false
+  skip-new-cyrillic-lines-check:
+    description: 'Forces checker to skip new cyrillic lines check'
+    required: false
+    default: false
 runs:
   using: 'docker'
   image: 'docker://mindboxmoscow/translation-checker-gha'
-  args:
-    - ${{ inputs.skip-inclusion-check }}
+  env:
+    skipInclusionCheck: ${{ inputs.skip-inclusion-check }}
+    skip-new-cyrillic-lines-check: ${{ inputs.skip-new-cyrillic-lines-check }}
