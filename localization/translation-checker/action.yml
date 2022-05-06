@@ -15,4 +15,4 @@ runs:
   image: 'docker://mindboxmoscow/translation-checker-gha'
   env:
     skipInclusionCheck: ${{ inputs.skip-inclusion-check }}
-    skip-new-cyrillic-lines-check: ${{ inputs.skip-new-cyrillic-lines-check }}
+    skipNewCyrillicLinesCheck: ${{ inputs.skip-new-cyrillic-lines-check }}
