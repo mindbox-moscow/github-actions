@@ -20,13 +20,13 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: phrase push
-        uses: mindbox-moscow/github-actions/localization/phrase_push@master
+        uses: mindbox-moscow/github-actions/localization/phrase-push@master
         with:
           phraseAppToken: ${{ secrets.phraseAppToken }}
           slackWebhookUrl: ${{ secrets.slackWebhookUrl }}
 
       - name: phrase pull
-        uses: mindbox-moscow/github-actions/localization/phrase_pull@master
+        uses: mindbox-moscow/github-actions/localization/phrase-pull@master
         with:
           gitHubToken: ${{ secrets.gitHubToken }}
           phraseAppToken: ${{ secrets.phraseAppToken }}
