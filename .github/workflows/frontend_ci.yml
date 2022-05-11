@@ -151,11 +151,10 @@ jobs:
         if: ${{ inputs.tests }}
         run: npm run test
 
-      - name: Run translation checker
-        if: ${{ inputs.translation_checker }}
-        uses: mindbox-moscow/TranslationChecker@master
+      - name: run translation checker
+        uses: mindbox-moscow/github-actions/localization/translation-checker@master
         with:
-          skip-inclusion-check: "--skipInclusionCheck"
+          skipInclusionCheck: true
 
   release:
     needs: checking
