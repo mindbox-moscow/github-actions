@@ -1,0 +1,33 @@
+name: Phrase pull
+on:
+  workflow_call:
+    secrets:
+      phraseAppToken:
+        description: 'Token to access PhraseApp'
+        required: true
+      gitHubToken:
+        description: 'GitHub token used to create PRs'
+        required: true
+      amixrWebhookUrl:
+        description: 'Amixr webhook url to send failure alert'
+        required: false
+jobs:
+  phrase-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: phrase pull
+        uses: mindbox-moscow/github-actions/localization/phrase-pull@master
+        with:
+          gitHubToken: ${{ secrets.gitHubToken }}
+          phraseAppToken: ${{ secrets.phraseAppToken }}
+
+      - name: Amixr notification if failure
+        uses: joelwmale/webhook-action@master
+        if: ${{ secrets.amixrWebhookUrl != '' && failure() }}
+        with:
+          url: ${{ secrets.amixrWebhookUrl }}
+          body: '{"title": "Phrase pull at ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
