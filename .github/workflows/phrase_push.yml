@@ -12,7 +12,7 @@ on:
         description: 'Amixr webhook url to send failure alert'
         required: false
 jobs:
-  phrase-sync:
+  phrase-push:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
