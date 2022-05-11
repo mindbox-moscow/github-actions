@@ -1,12 +1,9 @@
-name: Phrase sync
+name: Phrase pull
 on:
   workflow_call:
     secrets:
       phraseAppToken:
         description: 'Token to access PhraseApp'
-        required: true
-      slackWebhookUrl:
-        description: 'Slack webhook url to send notifications'
         required: true
       gitHubToken:
         description: 'GitHub token used to create PRs'
@@ -15,18 +12,12 @@ on:
         description: 'Amixr webhook url to send failure alert'
         required: false
 jobs:
-  phrase-sync:
+  phrase-pull:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v1
-
-      - name: phrase push
-        uses: mindbox-moscow/github-actions/localization/phrase-push@master
-        with:
-          phraseAppToken: ${{ secrets.phraseAppToken }}
-          slackWebhookUrl: ${{ secrets.slackWebhookUrl }}
 
       - name: phrase pull
         uses: mindbox-moscow/github-actions/localization/phrase-pull@master
@@ -39,4 +30,4 @@ jobs:
         if: ${{ secrets.amixrWebhookUrl != '' && failure() }}
         with:
           url: ${{ secrets.amixrWebhookUrl }}
-          body: '{"title": "Phrase sync at ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+          body: '{"title": "Phrase pull at ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
