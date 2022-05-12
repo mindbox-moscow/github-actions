@@ -119,7 +119,10 @@ jobs:
         with:
           node-version: "12.x"
           registry-url: "https://npm.pkg.github.com/mindbox-moscow"
-
+          
+      - name: Clean cache
+        run: npm cache clean -f
+      
       - name: Install deps
         run: npm ci
         env:
