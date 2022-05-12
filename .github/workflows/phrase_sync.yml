@@ -1,6 +1,11 @@
 name: Phrase sync
 on:
   workflow_call:
+    inputs:
+      baseBranch:
+        type: string
+        required: false
+        default: 'master'
     secrets:
       phraseAppToken:
         description: 'Token to access PhraseApp'
@@ -33,6 +38,7 @@ jobs:
         with:
           gitHubToken: ${{ secrets.gitHubToken }}
           phraseAppToken: ${{ secrets.phraseAppToken }}
+          baseBranch: ${{ inputs.baseBranch }}
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master

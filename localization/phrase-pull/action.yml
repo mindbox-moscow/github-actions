@@ -8,6 +8,10 @@ inputs:
   phraseAppToken:
     description: 'Token to access PhraseApp'
     required: true
+  baseBranch:
+    description: 'Base branch for localization pull PR-s'
+    required: false
+    default: 'master'
 
 runs:
   using: 'docker'
@@ -17,3 +21,4 @@ runs:
   env:
     gitHubToken: ${{ inputs.gitHubToken }}
     phraseAppToken: ${{ inputs.phraseAppToken }}
+    baseBranch: ${{ inputs.baseBranch }}
