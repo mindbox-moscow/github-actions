@@ -25,6 +25,9 @@ jobs:
           phraseAppToken: ${{ secrets.phraseAppToken }}
           slackWebhookUrl: ${{ secrets.slackWebhookUrl }}
       
+      - name: fail
+        run: exit 1
+      
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
         if: ${{ failure() }}
