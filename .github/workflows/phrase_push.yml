@@ -5,9 +5,6 @@ on:
       phraseAppToken:
         description: 'Token to access PhraseApp'
         required: true
-      slackWebhookUrl:
-        description: 'Slack webhook url to send notifications'
-        required: true
       amixrWebhookUrl:
         description: 'Amixr webhook url to send failure alert'
         required: false
@@ -23,7 +20,6 @@ jobs:
         uses: mindbox-moscow/github-actions/localization/phrase-push@master
         with:
           phraseAppToken: ${{ secrets.phraseAppToken }}
-          slackWebhookUrl: ${{ secrets.slackWebhookUrl }}
       
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
