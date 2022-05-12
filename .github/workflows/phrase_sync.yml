@@ -34,7 +34,7 @@ jobs:
           slackWebhookUrl: ${{ secrets.slackWebhookUrl }}
 
       - name: phrase pull
-        uses: mindbox-moscow/github-actions/localization/phrase-pull@chervyakov/allow-to-set-base-branch-in-phrase-integration
+        uses: mindbox-moscow/github-actions/localization/phrase-pull@master
         with:
           gitHubToken: ${{ secrets.gitHubToken }}
           phraseAppToken: ${{ secrets.phraseAppToken }}
