@@ -36,7 +36,7 @@ jobs:
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
-        if: ${{ secrets.amixrWebhookUrl != '' && failure() }}
+        if: ${{ failure() }}
         with:
           url: ${{ secrets.amixrWebhookUrl }}
           body: '{"title": "Phrase sync at ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
