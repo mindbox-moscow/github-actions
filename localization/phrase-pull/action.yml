@@ -9,9 +9,9 @@ inputs:
     description: 'Token to access PhraseApp'
     required: true
   baseBranch:
-    description: 'Base branch for localization pull PR's'
+    description: 'Base branch for localization pull PR-s'
     required: false
-    default: master
+    default: 'master'
 
 runs:
   using: 'docker'
