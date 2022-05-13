@@ -10,9 +10,6 @@ on:
       phraseAppToken:
         description: 'Token to access PhraseApp'
         required: true
-      slackWebhookUrl:
-        description: 'Slack webhook url to send notifications'
-        required: true
       gitHubToken:
         description: 'GitHub token used to create PRs'
         required: true
