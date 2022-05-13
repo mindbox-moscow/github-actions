@@ -124,7 +124,7 @@ jobs:
         run: npm cache clean -f
       
       - name: Install deps
-        run: npm ci
+        run: npm ci --loglevel verbose
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
