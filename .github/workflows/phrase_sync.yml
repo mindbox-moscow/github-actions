@@ -28,7 +28,6 @@ jobs:
         uses: mindbox-moscow/github-actions/localization/phrase-push@master
         with:
           phraseAppToken: ${{ secrets.phraseAppToken }}
-          slackWebhookUrl: ${{ secrets.slackWebhookUrl }}
 
       - name: phrase pull
         uses: mindbox-moscow/github-actions/localization/phrase-pull@master
