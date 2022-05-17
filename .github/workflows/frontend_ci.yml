@@ -28,11 +28,6 @@ on:
         default: false
         required: false
         type: boolean
-      translation_checker:
-        description: "True if need run translation checker"
-        default: true
-        required: false
-        type: boolean
       registry_id:
         description: "YC registry ID"
         default: "crpo9tj76o3c7pi8i72n"
@@ -114,7 +109,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Run translation checker
-        if: ${{ inputs.translation_checker }}
         uses: mindbox-moscow/github-actions/localization/translation-checker@master
         with:
           skipInclusionCheck: true
