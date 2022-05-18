@@ -12,6 +12,10 @@ inputs:
     description: 'Base branch for localization pull PR-s'
     required: false
     default: 'master'
+  allowCyrillicSymbolsInCSharpComments:
+    description: 'Allow cyrillic symbols in CSharp comments'
+    required: false
+    default: false
 
 runs:
   using: 'docker'
@@ -22,3 +26,4 @@ runs:
     gitHubToken: ${{ inputs.gitHubToken }}
     phraseAppToken: ${{ inputs.phraseAppToken }}
     baseBranch: ${{ inputs.baseBranch }}
+    allowCyrillicSymbolsInCSharpComments: ${{ inputs.allowCyrillicSymbolsInCSharpComments }}
