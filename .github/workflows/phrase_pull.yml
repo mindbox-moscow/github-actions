@@ -6,6 +6,10 @@ on:
         type: string
         required: false
         default: 'master'
+      allowCyrillicSymbolsInCSharpComments:
+        type: boolean
+        required: false
+        default: false
     secrets:
       phraseAppToken:
         description: 'Token to access PhraseApp'
@@ -30,6 +34,7 @@ jobs:
           gitHubToken: ${{ secrets.gitHubToken }}
           phraseAppToken: ${{ secrets.phraseAppToken }}
           baseBranch: ${{ inputs.baseBranch }}
+          allowCyrillicSymbolsInCSharpComments: ${{ inputs.allowCyrillicSymbolsInCSharpComments }}
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
