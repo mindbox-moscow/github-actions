@@ -47,6 +47,9 @@ jobs:
           baseBranch: ${{ inputs.baseBranch }}
           autoMerge: ${{ inputs.autoMerge }}
           allowCyrillicSymbolsInCSharpComments: ${{ inputs.allowCyrillicSymbolsInCSharpComments }}
+          
+      - name: debug
+        run: echo ${{inputs.autoMerge}}
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
