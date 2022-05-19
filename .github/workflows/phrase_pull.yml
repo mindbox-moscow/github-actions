@@ -10,6 +10,11 @@ on:
         type: boolean
         required: false
         default: false
+      autoMerge:
+        type: string
+        description: Auto merge strategy. Posible values is github or bulldozer.
+        required: false
+        default: bulldozer
     secrets:
       phraseAppToken:
         description: 'Token to access PhraseApp'

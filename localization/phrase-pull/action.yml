@@ -16,7 +16,10 @@ inputs:
     description: 'Allow cyrillic symbols in CSharp comments'
     required: false
     default: false
-
+  autoMerge:
+    description: Auto merge strategy. Posible values is github or bulldozer.
+    required: false
+    default: bulldozer
 runs:
   using: 'docker'
   image: 'docker://mindboxmoscow/phrase-integration-gha'
@@ -26,4 +29,5 @@ runs:
     gitHubToken: ${{ inputs.gitHubToken }}
     phraseAppToken: ${{ inputs.phraseAppToken }}
     baseBranch: ${{ inputs.baseBranch }}
+    autoMerge: ${{ inputs.autoMerge }}
     allowCyrillicSymbolsInCSharpComments: ${{ inputs.allowCyrillicSymbolsInCSharpComments }}
