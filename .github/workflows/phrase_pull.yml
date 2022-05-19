@@ -24,7 +24,9 @@ jobs:
   phrase-pull:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
+    env:
+      amixrWebhookUrl: ${{ secrets.amixrWebhookUrl }}
+      
     steps:
       - uses: actions/checkout@v3
 
@@ -38,7 +40,7 @@ jobs:
 
       - name: Amixr notification if failure
         uses: joelwmale/webhook-action@master
-        if: ${{ failure() }}
+        if: ${{ env.amixrWebhookUrl != '' && failure() }}
         with:
           url: ${{ secrets.amixrWebhookUrl }}
           body: '{"title": "Phrase pull at ${{ github.repository }} *failed*", "state": "alerting", "message": "Check logs at\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
