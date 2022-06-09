@@ -203,7 +203,7 @@ jobs:
                 fallback: 'fallback',
                 color: 'good',
                 title: "Repository: ${{ env.repository_name }}",
-              text: "You can check your *Frontend* changes at\nhttps://hot-testing-${{ env.hash_payload }}.staging.directcrm.ru\n\nand check your PR at \nhttps://github.com/mindbox-moscow/${{ env.repository_name }}/commit/${{ github.sha }}"
+              text: "You can check your *Frontend* changes at\nhttps://hot-testing-${{ env.hash_payload }}-staging.mindbox.ru\n\nand check your PR at \nhttps://github.com/mindbox-moscow/${{ env.repository_name }}/commit/${{ github.sha }}"
               }]
             }
         env:
@@ -219,7 +219,7 @@ jobs:
 
       - name: Add comment to commit if the job has completed
         run: |
-          jq -nc '{"body": ":heavy_check_mark: You can check your **Frontend** changes at\nhttps://hot-testing-${{ env.hash_payload }}.staging.directcrm.ru"}' | \
+          jq -nc '{"body": ":heavy_check_mark: You can check your **Frontend** changes at\nhttps://hot-testing-${{ env.hash_payload }}-staging.mindbox.ru"}' | \
           curl -sL -X POST -d @- \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
