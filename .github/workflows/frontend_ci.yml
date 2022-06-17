@@ -66,6 +66,11 @@ on:
         description: "True if need to commit release version to package.json"
         required: false
         default: false
+      create_release_docker_image:
+        type: boolean
+        description: "True if need to use new deployment procedure"
+        required: false
+        default: false
     secrets:
       npm_token:
         description: 'A GH_NPM_REGISTRY token passed from the caller workflow'
@@ -260,6 +265,26 @@ jobs:
       - name: Create artifact
         run: zip -r ${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip ./build
 
+      - name: Authenticate in yandex registry
+        if: ${{ inputs.e2e_tag }} || ${{ inputs.create_release_docker_image }}
+        run: echo '${{ secrets.container_registry_key }}' | docker login -u json_key --password-stdin cr.yandex
+
+      - name: Download release Dockerfile
+        if: ${{ inputs.create_release_docker_image }}
+        run: |
+          wget --header 'Authorization: token ${{ secrets.frontend_gha_full_token }}' https://raw.githubusercontent.com/mindbox-moscow/frontend-deploy/master/mcf-release/Dockerfile
+        working-directory: ./build
+
+      - name: Build release docker image
+        if: ${{ inputs.create_release_docker_image }}
+        run: docker build . -t ${{ env.registry }}/${{ env.octopus_project_name }}:${{ steps.release-number.outputs.release-number }} -t ${{ env.registry }}/${{ env.octopus_project_name }}:latest
+        working-directory: ./build
+
+      - name: Push e2e docker image to registry
+        if: ${{ inputs.create_release_docker_image }}
+        run: |
+          docker push ${{ env.registry }}/${{ env.octopus_project_name }} --all-tags
+
       - name: Install e2e deps
         if: ${{ inputs.e2e_tag }}
         run: npm ci
@@ -285,10 +310,6 @@ jobs:
         if: ${{ inputs.e2e_tag }}
         run: docker build . -t ${{ env.registry }}/${{ env.e2e-image }}:${{ env.e2e-tag }}
         working-directory: ./e2e
-
-      - name: Authenticate in yandex registry
-        if: ${{ inputs.e2e_tag }}
-        run: echo '${{ secrets.container_registry_key }}' | docker login -u json_key --password-stdin cr.yandex
 
       - name: Push e2e docker image to registry
         if: ${{ inputs.e2e_tag }}
