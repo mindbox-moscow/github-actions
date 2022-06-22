@@ -177,7 +177,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./node_modules
-          key: npm-ci-${{ github.sha }}
+          key: e2e-npm-ci-${{ github.sha }}
 
       - name: Run E2E typechecking
         if: ${{ inputs.e2e_typechecking }}
