@@ -269,6 +269,13 @@ jobs:
           fi
         id: set_project
 
+      - name: Setup Node.JS
+        uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          node-version: "12.x"
+          registry-url: "https://npm.pkg.github.com/mindbox-moscow"
+
       - name: Run typechecking
         if: ${{ env.e2e_typechecking }}
         run: cd ./e2e && npm run e2e:check-types
@@ -276,13 +283,6 @@ jobs:
       - name: Run linters
         if: ${{ env.e2e_linters }}
         run: cd ./e2e && npm run e2e:check-scripts
-
-      - name: Setup Node.JS
-        uses: actions/setup-node@v1
-        with:
-          always-auth: true
-          node-version: "12.x"
-          registry-url: "https://npm.pkg.github.com/mindbox-moscow"
 
       - name: Run E2E tests on not core project.
         uses: cypress-io/github-action@v2
