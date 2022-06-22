@@ -169,23 +169,20 @@ jobs:
         run: npm run test
 
       - name: Install E2E deps
-        run: cd ./e2e && npm ci --loglevel verbose
+        run: npm ci --loglevel verbose
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
-
-      - name: Cache E2E node modules
-        uses: actions/cache@v2
-        with:
-          path: ./node_modules
-          key: e2e-npm-ci-${{ github.sha }}
+        working-directory: ./e2e
 
       - name: Run E2E typechecking
         if: ${{ inputs.e2e_typechecking }}
         run: npm run e2e:check-types
+        working-directory: ./e2e
 
       - name: Run E2E linters
         if: ${{ inputs.e2e_linters }}
         run: npm run e2e:check-scripts
+        working-directory: ./e2e
 
   release:
     needs: checking
