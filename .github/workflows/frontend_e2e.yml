@@ -3,16 +3,6 @@ name: e2e tests
 on:
   workflow_call:
     inputs:
-      e2e_typechecking:
-        description: "True if need to run check-types"
-        default: false
-        required: false
-        type: boolean
-      e2e_linters:
-        description: "True if need to run check-scripts"
-        default: false
-        required: false
-        type: boolean
       e2e-timeout:
         description: "Timeout in minutes"
         default: 20
@@ -226,8 +216,6 @@ jobs:
     timeout-minutes: ${{ inputs.e2e-timeout }}
     if: ${{ always() && !cancelled() && !contains(github.ref, 'LocalizationPull') && !inputs.core_project }}
     env:
-      e2e_typechecking: ${{ inputs.e2e_typechecking }}
-      e2e_linters: ${{ inputs.e2e_linters }}
       retries: ${{ inputs.retries }}
       CYPRESS_username: "${{ secrets.cypress_login }}"
       CYPRESS_password: "${{ secrets.cypress_pass }}"
@@ -275,14 +263,6 @@ jobs:
           always-auth: true
           node-version: "12.x"
           registry-url: "https://npm.pkg.github.com/mindbox-moscow"
-
-      - name: Run typechecking
-        if: ${{ env.e2e_typechecking }}
-        run: cd ./e2e && npm run e2e:check-types
-
-      - name: Run linters
-        if: ${{ env.e2e_linters }}
-        run: cd ./e2e && npm run e2e:check-scripts
 
       - name: Run E2E tests on not core project.
         uses: cypress-io/github-action@v2
