@@ -28,6 +28,11 @@ on:
         default: false
         required: false
         type: boolean
+      e2e_install_deps:
+        description: "True if need install deps for e2e"
+        default: false
+        required: false
+        type: boolean
       e2e_typechecking:
         description: "True if need to run check-types for E2E"
         default: false
@@ -169,6 +174,7 @@ jobs:
         run: npm run test
 
       - name: Install E2E deps
+        if: ${{ inputs.e2e_install_deps }}
         run: npm ci --loglevel verbose
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
