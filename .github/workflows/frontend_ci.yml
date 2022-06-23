@@ -305,7 +305,7 @@ jobs:
         run: docker build . -t ${{ env.registry }}/${{ env.octopus_project_name }}:${{ steps.release-number.outputs.release-number }} -t ${{ env.registry }}/${{ env.octopus_project_name }}:latest
         working-directory: ./build
 
-      - name: Push e2e docker image to registry
+      - name: Push release docker image to registry
         if: ${{ inputs.create_release_docker_image }}
         run: |
           docker push ${{ env.registry }}/${{ env.octopus_project_name }} --all-tags
