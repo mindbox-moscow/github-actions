@@ -322,7 +322,7 @@ jobs:
           SENTRY_AUTOBUGS_PROJECT: ${{ inputs.sentry_autobugs_project }}
           SENTRY_AUTOBUGS_URL: ${{ env.sentry_autobugs_url }}
           SENTRY_AUTOBUGS_RELEASE: ${{ steps.release-number.outputs.release-number }} (${{ github.sha }})
-          MCF_BUILD_DIR: ${{ GITHUB_WORKSPACE }}/v2_build
+          MCF_BUILD_DIR: ${GITHUB_WORKSPACE}/v2_build
           MCF_STATIC_FOLDER: v2_static
 
       - name: Download release Dockerfile
