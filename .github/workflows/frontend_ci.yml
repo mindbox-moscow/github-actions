@@ -3,6 +3,11 @@ name: CI
 on:
   workflow_call:
     inputs:
+      node_version:
+        description: "Node.js version"
+        default: "12.x"
+        required: false
+        type: string
       typechecking:
         description: "True if need to run check-types"
         default: false
@@ -131,7 +136,7 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v1
         with:
-          node-version: "12.x"
+          node-version: ${{ inputs.node_version }}
           registry-url: "https://npm.pkg.github.com/mindbox-moscow"
 
       - name: Clean cache
