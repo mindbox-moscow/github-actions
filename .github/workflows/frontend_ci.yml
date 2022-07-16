@@ -81,7 +81,7 @@ on:
         description: "True if need to commit release version to package.json"
         required: false
         default: false
-      create_release_docker_image:
+      use_k8_deploy_process:
         type: boolean
         description: "True if need to use new deployment procedure"
         required: false
@@ -303,11 +303,11 @@ jobs:
         run: zip -r ${{ env.octopus_project_name }}.${{ steps.release-number.outputs.release-number }}.zip ./build
 
       - name: Authenticate in yandex registry
-        if: ${{ inputs.e2e_tag }} || ${{ inputs.create_release_docker_image }}
+        if: ${{ inputs.e2e_tag }} || ${{ inputs.use_k8_deploy_process }}
         run: echo '${{ secrets.container_registry_key }}' | docker login -u json_key --password-stdin cr.yandex
 
       - name: Build and format npm-package for new deploy
-        if: ${{ inputs.create_release_docker_image }}
+        if: ${{ inputs.use_k8_deploy_process }}
         run: npm run build
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
@@ -330,25 +330,25 @@ jobs:
           MCF_STATIC_FOLDER: v2_static
 
       - name: Download release Dockerfile
-        if: ${{ inputs.create_release_docker_image }}
+        if: ${{ inputs.use_k8_deploy_process }}
         run: |
           wget --header 'Authorization: token ${{ secrets.frontend_gha_full_token }}' https://raw.githubusercontent.com/mindbox-moscow/frontend-deploy/master/mcf-release/Dockerfile
         working-directory: ./build
 
         # needed for frontend discovery(build initial.js)
       - name: copy remoteEntry to v2_static folder
-        if: ${{ inputs.create_release_docker_image }}
+        if: ${{ inputs.use_k8_deploy_process }}
         run: |
           find . -type f -name "remoteEntry.js" -exec cp {} ./v2_static/ \;
         working-directory: ./build
 
       - name: Build release docker image
-        if: ${{ inputs.create_release_docker_image }}
+        if: ${{ inputs.use_k8_deploy_process }}
         run: docker build . -t ${{ env.registry }}/${{ env.octopus_project_name }}:${{ steps.release-number.outputs.release-number }} -t ${{ env.registry }}/${{ env.octopus_project_name }}:latest
         working-directory: ./build
 
       - name: Push release docker image to registry
-        if: ${{ inputs.create_release_docker_image }}
+        if: ${{ inputs.use_k8_deploy_process }}
         run: |
           docker push ${{ env.registry }}/${{ env.octopus_project_name }} --all-tags
 
@@ -426,6 +426,20 @@ jobs:
             --channel Default
             --tenant=*
             --apikey ${{ secrets.octopus_api_key }}
+            --releasenotes "${{ steps.create-release.outputs.release-notes-body }}"
+
+      - name: Create Octopus k8 Release
+        if: ${{ inputs.use_k8_deploy_process }}
+        uses: docker://octopusdeploy/octo
+        with:
+          args: >
+            create-release
+            --server ${{ secrets.OCTOPUS_SERVER }}
+            --project "${{ env.octopus_project_name }}"-k8-deploy
+            --version ${{ steps.release-number.outputs.release-number }}
+            --channel Default
+            --tenant=*
+            --apikey ${{ secrets.OCTOPUS_API_KEY }}
             --releasenotes "${{ steps.create-release.outputs.release-notes-body }}"
 
       - name: Amixr notification if failure
