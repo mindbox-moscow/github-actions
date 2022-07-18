@@ -202,7 +202,7 @@ jobs:
     concurrency: release
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }}
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       registry: cr.yandex/${{ inputs.registry_id }}
       e2e-image: ${{ inputs.e2e_image }}
