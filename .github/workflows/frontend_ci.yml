@@ -384,7 +384,7 @@ jobs:
           docker push ${{ env.registry }}/${{ env.e2e-image }}:${{ env.e2e-tag }}
 
       - name: Create Release
-        id: create_release
+        id: create-release
         uses: mindbox-moscow/github-actions/create-github-release@master
         with:
           release-number: ${{ steps.release-number.outputs.release-number }}
