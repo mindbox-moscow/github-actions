@@ -20,6 +20,6 @@ echo $changelog
 changelog="${changelog//'%'/'%25'}"
 changelog="${changelog//$'\n'/'%0A' - }"
 changelog=" - ${changelog//$'\r'/'%0D'}"
-changelog=$lastcommit_hyperlink$'%0A'$changelog
+changelog=$lastcommit_hyperlink$'<br/>'$changelog
 
 echo "::set-output name=changelog::$changelog"
