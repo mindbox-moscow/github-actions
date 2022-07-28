@@ -16,10 +16,18 @@ inputs:
   tfBackendSecretKey:
     description: ''
     required: true
+  vaultToken:
+    description: ''
+    required: true
+    default: ''
   planAdditionalVars:
     description: ''
     required: false
     default: ''
+  tokenKeyFile:
+    description: ''
+    required: false
+    default: "token.txt"
 outputs: {}
 runs:
   using: "composite"
@@ -48,6 +56,13 @@ runs:
     - name: "Terraform Validate"
       id: validate
       run: terraform validate -no-color
+      working-directory: ${{ inputs.workingDir }}
+      shell: bash
+
+    - name: "Replace secrets in key file"
+      run: |
+        echo "--- Replace secrets in key file"
+        sed -i 's:#{VAULT_TOKEN}:'${{ inputs.vaultToken }}':' ${{ inputs.tokenKeyFile }}
       working-directory: ${{ inputs.workingDir }}
       shell: bash
 
