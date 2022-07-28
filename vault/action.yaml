@@ -27,7 +27,7 @@ inputs:
   tokenKeyFile:
     description: ''
     required: false
-    default: "token.txt"
+    default: "token.json"
 outputs: {}
 runs:
   using: "composite"
